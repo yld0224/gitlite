@@ -8,16 +8,20 @@ class blob{
     std::string blob_id;
     std::vector<unsigned char> blob_contents;
 };
-class stage{};
+class stage{
+    std::map<std::string,std::string> added_files;
+    std::map<std::string,std::string> removed_files;
+    void save_stage();
+    void load_stage();
+};
+//repository类不用于存储数据，而是在需要的时候从磁盘读取
+//repository类包含所有的函数方法
 class Repository{
     private:
-    std::string HEAD;
-    std::vector<blob> current_blobs;
-    stage current_stage;
-    std::vector<Commit> current_commits;
+
     public:
-    Repository(){};//构造函数，需要读取当前的head指针并对commit进行初始化
-    ~Repository()=default;//析构函数，在程序结束自动析构
+    Repository()=default;
+    ~Repository()=default;
     void init();
     void addRemote(std::string,std::string);
     void rmRemote(std::string);
