@@ -14,9 +14,12 @@ class Commit{
     std::map<std::string,std::string> tracked_files;//文件名，blod_id
     std::vector<std::string> parents;
     public:
-    Commit():timestamp("123"),message("Initial Commit"){};
+    Commit():timestamp("Thu Jan 01 00:00:00 1970 +0000"),message("Initial Commit"){};
     ~Commit()=default;
-    void save();
-    Commit load(std::string commit_id);
+    void save();//把commit给记录到文件夹中
+    Commit load(std::string commit_id);//从文件夹中获得commit
+    //方法属于类而不是成员
+    static std::string genID(Commit commit);//生成commitid
+    static std::string getParents(Commit commit);//记录父commit
 };
 #endif // COMMIT_H 

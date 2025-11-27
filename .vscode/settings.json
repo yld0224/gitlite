@@ -56,5 +56,5 @@
   "C_Cpp_Runner.showCompilationTime": false,
   "C_Cpp_Runner.useLinkTimeOptimization": false,
   "C_Cpp_Runner.msvcSecureNoWarnings": false,
-  "cmake.sourceDirectory": "/mnt/windows_share/Codefield/CODE_C/gitlite-main/gitlite-main/src"
+  "cmake.sourceDirectory": "/mnt/windows_share/Codefield/CODE_C/gitlite-main/gitlite-main"
 }
