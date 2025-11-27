@@ -15,9 +15,9 @@ void Repository::init(){
         Utils::createDirectories(path+"/ref");
         Utils::createDirectories(path+"/obj");
         Commit initial_commit;
-        std::string initial_id=Commit::genID(initial_commit);
-        Utils::writeContents(path+"/ref"+"/master.txt",initial_id);
-        Utils::writeContents(path+"/ref"+"/HEAD.txt",initial_id);
-        //接下来需要把commit给序列化并且存储到obj里面，应该怎么存储?
+        initial_commit.save();
+        std::string initial_id=initial_commit.getID();
+        Utils::writeContents(path+"/ref"+"/master",initial_id);
+        Utils::writeContents(path+"/ref"+"/HEAD","master");
     }
-};//由于要求所有初始提交都有相同id，用时间的sha-1来代表id
+};

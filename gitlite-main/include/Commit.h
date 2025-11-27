@@ -18,8 +18,8 @@ class Commit{
     ~Commit()=default;
     void save();//把commit给记录到文件夹中
     Commit load(std::string commit_id);//从文件夹中获得commit
-    //方法属于类而不是成员
-    static std::string genID(Commit commit);//生成commitid
-    static std::string getParents(Commit commit);//记录父commit
+    std::string genID();//生成commitid
+    std::string getID();
+    std::string getParents();//记录父commit
 };
 #endif // COMMIT_H 

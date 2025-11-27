@@ -277,6 +277,9 @@ std::string Utils::join(const std::string& first, const std::string& second) {
 std::string Utils::join(const std::string& first, const std::string& second, const std::string& third) {
     return join(join(first, second), third);
 }
+std::string Utils::join(const std::string& first, const std::string& second, const std::string& third,const std::string& fourth) {
+    return join(join(join(first, second), third),fourth);
+}
 
 /** Returns a byte array containing the serialized contents of OBJ. */
 std::vector<unsigned char> Utils::serialize(const std::string& obj) {
