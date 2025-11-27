@@ -31,6 +31,6 @@ void Commit::save(){
     this->commit_id=genID();
    }
    std::string cwd=static_cast<std::string>(std::filesystem::current_path());
-   std::string path=Utils::join(cwd,".gitlite","obj",this->commit_id);
+   std::string path=Utils::join(cwd,".gitlite","objects",this->commit_id);
    Utils::writeContents(path,contents.str());
 }

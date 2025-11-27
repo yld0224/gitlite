@@ -12,12 +12,12 @@ void Repository::init(){
         Utils::exitWithMessage("A Gitlite version-control system already exists in the current directory.");
     }
     if(Utils::createDirectories(path)){
-        Utils::createDirectories(path+"/ref");
-        Utils::createDirectories(path+"/obj");
+        Utils::createDirectories(path+"/refs/heads");
+        Utils::createDirectories(path+"/objects");
         Commit initial_commit;
         initial_commit.save();
         std::string initial_id=initial_commit.getID();
-        Utils::writeContents(path+"/ref"+"/master",initial_id);
-        Utils::writeContents(path+"/ref"+"/HEAD","master");
+        Utils::writeContents(path+"/refs/heads/master",initial_id);
+        Utils::writeContents(path+"/HEAD","ref: refs/heads/master");
     }
 };
