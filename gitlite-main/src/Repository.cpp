@@ -47,6 +47,7 @@ void Repository::add(std::string filename){
             if(iter!=current_stage.added_files.end()){
                 current_stage.added_files.erase(iter);
             }
+            current_stage.save_stage(current_stage);
             return;
         }
     }//当前提交中含有与该文件版本相同的文件
