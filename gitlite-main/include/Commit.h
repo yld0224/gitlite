@@ -32,6 +32,7 @@ class Commit{
         return this->parents;
     }
     std::vector<std::string> setParents(std::string parent_id){
+        this->parents.clear();
         this->parents.push_back(parent_id);
         return this->parents;
     }
@@ -45,9 +46,8 @@ class Commit{
         std::time_t currentTime = std::time(nullptr);
         std::tm* localTime = std::localtime(&currentTime);
         char buffer[80];
-        std::stringstream ss;
-        ss<<std::strftime(buffer, sizeof(buffer), "%a %b %d %H:%M:%S %Y %z", localTime);
-        this->timestamp=ss.str();
+        std::strftime(buffer, sizeof(buffer), "%a %b %d %H:%M:%S %Y %z", localTime);
+        this->timestamp = std::string(buffer);
         return;
     }
     void setMessage(std::string new_message){

@@ -18,7 +18,7 @@ void Repository::init(){
         initial_commit.save();
         std::string initial_id=initial_commit.getID();
         Utils::writeContents(path+"/refs/heads/master",initial_id);
-        Utils::writeContents(path+"/HEAD","ref: refs/heads/master");
+        Utils::writeContents(path+"/HEAD","ref:refs/heads/master");
     }
 }
 void Repository::add(std::string filename){
@@ -102,8 +102,13 @@ void Repository::commit(std::string message){
     current_commit.setID(current_id);
     current_commit.save();
     //将commit改变之后保存在文件夹
-    std::string pathToBranch=getPathToBranch();
-    Utils::writeContents(pathToBranch,current_id);
+    if(isDetachedHEAD()){
+        std::string path=Utils::join(getGitliteDir(),"HEAD");
+        Utils::writeContents(path,current_id);
+    }else{
+        std::string path=getPathToBranch();
+        Utils::writeContents(path,current_id);
+    }
     //最后应该要移动头指针和分支指针
 }
 
@@ -128,10 +133,20 @@ std::string getPathToBranch(){
     return pathToBranch=Utils::join(cwd,".gitlite",pathToBranch);
 }
 std::string getCommitIdFromHEAD(){
-    std::string pathToBranch=getPathToBranch();
-    return Utils::readContentsAsString(pathToBranch);
+    if(!isDetachedHEAD()){
+        std::string pathToBranch=getPathToBranch();
+        return Utils::readContentsAsString(pathToBranch);
+    }else{
+        std::string path=Utils::join(getGitliteDir(),"HEAD");
+        std::string content = Utils::readContentsAsString(path);
+        return content;
+    }
 }
-void setHEAD(){}
+bool isDetachedHEAD(){
+    std::string path=Utils::join(getGitliteDir(),"HEAD");
+    std::string content = Utils::readContentsAsString(path);
+    return content.find("ref:") == std::string::npos;
+}
 void stage::save_stage(stage){
     std::ostringstream contents;
     for(auto&[filename,blob_id]:this->added_files){

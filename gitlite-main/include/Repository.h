@@ -57,7 +57,8 @@ class Repository{
     void pull(std::string,std::string);
 };
 std::string getGitliteDir();//返回gitlite的文件路径
-std::string getPathToBranch();
+std::string getPathToBranch();//返回到当前branch的路径
+bool isDetachedHEAD();
 std::string getCommitIdFromHEAD();//返回HEAD指针里的文件内容
 void setHEAD();//改变头指针的位置(目前只处理了在master分支上的情况)
 #endif // REPOSITORY_H
