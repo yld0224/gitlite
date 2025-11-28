@@ -34,3 +34,28 @@ void Commit::save(){
    std::string path=Utils::join(cwd,".gitlite","objects",this->commit_id);
    Utils::writeContents(path,contents.str());
 }
+Commit Commit::load(std::string commit_id){
+   std::string cwd=static_cast<std::string>(std::filesystem::current_path());
+   std::string path=Utils::join(cwd,".gitlite","objects",commit_id);
+   std::stringstream ss;
+   ss<<Utils::readContentsAsString(path);
+   std::string lines;
+   Commit loading_commit;
+   while(std::getline(ss,lines)){
+      auto pos=lines.find(':');
+      if(lines.substr(0,pos)=="timestamp"){
+         loading_commit.timestamp=lines.substr(pos+1,lines.length());
+      }if(lines.substr(0,pos)=="message"){
+         loading_commit.message=lines.substr(pos+1,lines.length());
+      }if(lines.substr(0,pos)=="parents"){
+         loading_commit.parents.push_back(lines.substr(pos+1,lines.length()));
+      }if(lines.substr(0,pos)=="tracked_files"){
+         auto space_pos=lines.find(' ');
+         std::string filename=lines.substr(pos+1,space_pos-pos-1);
+         std::string blob_id=lines.substr(space_pos+1,lines.length());
+         loading_commit.tracked_files[filename]=blob_id;
+      }
+   }
+   loading_commit.commit_id=commit_id;
+   return loading_commit;
+}
