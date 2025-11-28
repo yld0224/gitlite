@@ -32,7 +32,7 @@ void Repository::add(std::string filename){
     blob new_blob(blob_id,content);
     stage current_stage;
     Commit current_commit;
-    std::string commit_id=getHEAD();
+    std::string commit_id=getCommitIdFromHEAD();
     current_commit=Commit::load(commit_id);//从头指针中找到commitid
     current_stage=stage::load_stage();
     std::map<std::string,std::string> commited_files=current_commit.getTrackedFiles();
@@ -53,13 +53,58 @@ void Repository::add(std::string filename){
     }//当前提交中含有与该文件版本相同的文件
     if(iter!=current_stage.added_files.end()){//在暂存区找到同名文件
         iter->second=new_blob.getID();
-        new_blob.save_blob();
+        new_blob.save_blob(new_blob);
     }else{//没有找到同名文件，创建一个新的add文件和对应的blob
         current_stage.added_files[filename]=blob_id;
-        new_blob.save_blob();
+        new_blob.save_blob(new_blob);
     }
     current_stage.save_stage(current_stage);//将更改之后的stage保存
     return;
+}
+void Repository::commit(std::string message){
+    if(message.empty()){
+        Utils::exitWithMessage("Please enter a commit message.");
+    }
+    Commit last_commit;
+    std::string last_commit_id=getCommitIdFromHEAD();
+    last_commit=Commit::load(last_commit_id);
+    Commit current_commit(last_commit);
+    current_commit.setTime();
+    current_commit.setMessage(message);
+    current_commit.setParents(last_commit_id);
+    //先找回上次的commit，并且复制到本次的commit上
+    stage current_stage;
+    current_stage=stage::load_stage();
+    if(current_stage.added_files.empty()&&current_stage.removed_files.empty()){
+        Utils::exitWithMessage("No changes added to the commit.");
+    }
+    std::map tracked_files=current_commit.getTrackedFiles();
+    for(auto& [filename,blob_id]:current_stage.added_files){
+        auto iter=tracked_files.find(filename);
+        if(iter!=tracked_files.end()){
+            iter->second=blob_id;
+        }else{
+            tracked_files[filename]=blob_id;
+        }
+    }
+    for(auto&[filename,blob_id]:current_stage.removed_files){
+        auto iter=tracked_files.find(filename);
+        if(iter!=tracked_files.end()){
+            tracked_files.erase(iter);
+        }
+    }
+    current_commit.setTrackedFiles(current_commit,tracked_files);
+    //这里是更新commit里面的跟踪文件
+    current_stage.clear();
+    current_stage.save_stage(current_stage);
+    //这里是改变stage的状态
+    std::string current_id=current_commit.genID();
+    current_commit.setID(current_id);
+    current_commit.save();
+    //将commit改变之后保存在文件夹
+    std::string pathToBranch=getPathToBranch();
+    Utils::writeContents(pathToBranch,current_id);
+    //最后应该要移动头指针和分支指针
 }
 
 
@@ -69,7 +114,7 @@ void Repository::add(std::string filename){
 std::string getGitliteDir(){
     return static_cast<std::string>(std::filesystem::current_path()) + "/.gitlite";
 }
-std::string getHEAD(){
+std::string getPathToBranch(){
     std::string cwd=static_cast<std::string>(std::filesystem::current_path());
     std::string path=Utils::join(cwd,".gitlite","HEAD");
     std::stringstream ss;
@@ -80,9 +125,13 @@ std::string getHEAD(){
         auto pos=line.find(':');
         pathToBranch=line.substr(pos+1,line.length());
     }
-    pathToBranch=Utils::join(cwd,".gitlite",pathToBranch);
+    return pathToBranch=Utils::join(cwd,".gitlite",pathToBranch);
+}
+std::string getCommitIdFromHEAD(){
+    std::string pathToBranch=getPathToBranch();
     return Utils::readContentsAsString(pathToBranch);
 }
+void setHEAD(){}
 void stage::save_stage(stage){
     std::ostringstream contents;
     for(auto&[filename,blob_id]:this->added_files){
@@ -120,4 +169,10 @@ stage stage::load_stage(){
       }
     }
    return loading_stage;
+}
+void blob::save_blob(blob){
+    std::string cwd=static_cast<std::string>(std::filesystem::current_path());
+    std::string path=Utils::join(cwd,".gitlite","objects",this->blob_id);
+    Utils::writeContents(path,this->blob_contents);
+    return;
 }

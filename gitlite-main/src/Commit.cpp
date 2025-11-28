@@ -17,6 +17,10 @@ std::string Commit::genID(){
 std::string Commit::getID(){
     return this->commit_id;
 }
+void Commit::setID(std::string new_id){
+   this->commit_id=new_id;
+   return;
+}
 void Commit::save(){
    std::ostringstream contents;
    contents<<"timestamp:"<<this->timestamp<<"\n";
