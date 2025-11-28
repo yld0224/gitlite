@@ -44,15 +44,15 @@ Commit Commit::load(std::string commit_id){
    while(std::getline(ss,lines)){
       auto pos=lines.find(':');
       if(lines.substr(0,pos)=="timestamp"){
-         loading_commit.timestamp=lines.substr(pos+1,lines.length());
+         loading_commit.timestamp=lines.substr(pos+1);
       }if(lines.substr(0,pos)=="message"){
-         loading_commit.message=lines.substr(pos+1,lines.length());
+         loading_commit.message=lines.substr(pos+1);
       }if(lines.substr(0,pos)=="parents"){
-         loading_commit.parents.push_back(lines.substr(pos+1,lines.length()));
+         loading_commit.parents.push_back(lines.substr(pos+1));
       }if(lines.substr(0,pos)=="tracked_files"){
          auto space_pos=lines.find(' ');
          std::string filename=lines.substr(pos+1,space_pos-pos-1);
-         std::string blob_id=lines.substr(space_pos+1,lines.length());
+         std::string blob_id=lines.substr(space_pos+1);
          loading_commit.tracked_files[filename]=blob_id;
       }
    }

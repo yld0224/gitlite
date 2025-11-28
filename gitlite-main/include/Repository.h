@@ -20,7 +20,7 @@ class stage{
     std::map<std::string,std::string> removed_files;
     public:
     void save_stage(stage);
-    static stage load_stage(stage);
+    static stage load_stage();
 };
 //repository类不用于存储数据，而是在需要的时候从磁盘读取
 //repository类包含所有的函数方法

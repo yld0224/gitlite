@@ -34,10 +34,14 @@ void Repository::add(std::string filename){
     Commit current_commit;
     std::string commit_id=getHEAD();
     current_commit=Commit::load(commit_id);//从头指针中找到commitid
-    stage::load_stage(current_stage);
+    current_stage=stage::load_stage();
     std::map<std::string,std::string> commited_files=current_commit.getTrackedFiles();
     auto iter1=commited_files.find(filename);
     auto iter=current_stage.added_files.find(filename);
+    auto iter2=current_stage.removed_files.find(filename);
+    if(iter2!=current_stage.removed_files.end()){
+        current_stage.removed_files.erase(iter2);
+    }//如果在待删除区域中,去除removed标记
     if(iter1!=commited_files.end()){
         if(commited_files[filename]==new_blob.getID()){
             if(iter!=current_stage.added_files.end()){
@@ -53,10 +57,6 @@ void Repository::add(std::string filename){
         current_stage.added_files[filename]=blob_id;
         new_blob.save_blob();
     }
-    auto iter2=current_stage.removed_files.find(filename);
-    if(iter2!=current_stage.removed_files.end()){
-        current_stage.removed_files.erase(iter2);
-    }//如果在待删除区域中,去除removed标记
     current_stage.save_stage(current_stage);//将更改之后的stage保存
     return;
 }
@@ -88,16 +88,20 @@ void stage::save_stage(stage){
     contents<<"added_files:"<<filename<<' '<<blob_id<<'\n';
     }
     for(auto&[filename,blob_id]:this->removed_files){
-        contents<<"added_files:"<<filename<<' '<<blob_id<<'\n';
+        contents<<"removed_files:"<<filename<<' '<<blob_id<<'\n';
     }
     std::string cwd=static_cast<std::string>(std::filesystem::current_path());
     std::string path=Utils::join(cwd,".gitlite","objects","stage");
     Utils::writeContents(path,contents.str());
 }
-stage stage::load_stage(stage loading_stage){
+stage stage::load_stage(){
     std::string cwd=static_cast<std::string>(std::filesystem::current_path());
     std::string path=Utils::join(cwd,".gitlite","objects","stage");
+    stage loading_stage;
     std::stringstream ss;
+    if(!Utils::exists(path)){
+        return loading_stage;
+    }
     ss<<Utils::readContentsAsString(path);
     std::string lines;
     while(std::getline(ss,lines)){
@@ -105,12 +109,12 @@ stage stage::load_stage(stage loading_stage){
         if(lines.substr(0,pos)=="added_files"){
         auto space_pos=lines.find(' ');
         std::string filename=lines.substr(pos+1,space_pos-pos-1);
-        std::string blob_id=lines.substr(space_pos+1,lines.length());
+        std::string blob_id=lines.substr(space_pos+1);
         loading_stage.added_files[filename]=blob_id;
       }if(lines.substr(0,pos)=="removed_files"){
         auto space_pos=lines.find(' ');
         std::string filename=lines.substr(pos+1,space_pos-pos-1);
-        std::string blob_id=lines.substr(space_pos+1,lines.length());
+        std::string blob_id=lines.substr(space_pos+1);
         loading_stage.removed_files[filename]=blob_id;
       }
     }
