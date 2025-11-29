@@ -121,6 +121,7 @@ void Repository::rm(std::string filename){
     auto current_tracked_files=loading_commit.getTrackedFiles();
     auto iter=loading_stage.added_files.find(filename);
     auto iter1=current_tracked_files.find(filename);
+    //接下来根据find的情况对文件进行操作
     if(iter==loading_stage.added_files.end()&&iter1==current_tracked_files.end()){
         Utils::exitWithMessage("No reason to remove the file.");
     }
@@ -129,12 +130,22 @@ void Repository::rm(std::string filename){
             loading_stage.added_files.erase(filename);
             loading_stage.save_stage(loading_stage);
             return;
-        }
-    }else{
-        if(iter1!=current_tracked_files.end()){
-            std::string blob_id=iter->second;
+        }else{
+            std::string blob_id=iter1->second;
+            loading_stage.added_files.erase(filename);
             loading_stage.removed_files[filename]=blob_id;
             loading_stage.save_stage(loading_stage);
+            std::string pathToDelete=Utils::join(path,filename);
+            Utils::restrictedDelete(pathToDelete);
+            return;
+        }//bugfix:如果在stage上而且在commit里的情况
+    }else{
+        if(iter1!=current_tracked_files.end()){
+            std::string blob_id=iter1->second;
+            loading_stage.removed_files[filename]=blob_id;
+            loading_stage.save_stage(loading_stage);
+            std::string pathToDelete=Utils::join(path,filename);
+            Utils::restrictedDelete(pathToDelete);
             return;
         }
     }
@@ -156,7 +167,7 @@ std::string getPathToBranch(){
     std::string pathToBranch;
     while(std::getline(ss,line)){
         auto pos=line.find(':');
-        pathToBranch=line.substr(pos+1,line.length());
+        pathToBranch=line.substr(pos+1);
     }
     return pathToBranch=Utils::join(cwd,".gitlite",pathToBranch);
 }
