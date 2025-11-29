@@ -110,6 +110,7 @@ void Repository::commit(std::string message){
         Utils::writeContents(path,current_id);
     }
     //最后应该要移动头指针和分支指针
+    return;
 }
 void Repository::rm(std::string filename){
     std::string path=getGitliteDir();
@@ -161,8 +162,27 @@ void Repository::log(){
         parents=current_commit.getParents();
     }//当前commit还存在父节点
     current_commit.showCommitInfo();//初始commit
+    return;
 }
-
+void Repository::globalLog(){
+    std::vector<std::string> filenames;
+    std::string path=getGitliteDir();
+    path=Utils::join(path,"objects");
+    filenames=Utils::plainFilenamesIn(path);
+    for(auto filename:filenames){
+        std::stringstream ss;
+        ss<<Utils::readContentsAsString(filename);
+        std::string line;
+        if(std::getline(ss,line)){
+            if(line.substr(0,9)=="timestamp"){
+                Commit current_commit;
+                current_commit.load(filename);
+                current_commit.showCommitInfo();
+            }
+        }
+    }
+    return;
+}
 
 
 
