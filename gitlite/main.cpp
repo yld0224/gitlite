@@ -38,11 +38,11 @@ int main(int argc, char* argv[]) {
     } else if (firstArg == "add-remote") {
         checkCWD();
         checkArgsNum(args, 3);
-     repo.addRemote(args[1], args[2]);
+     //repo.addRemote(args[1], args[2]);
     } else if (firstArg == "rm-remote") {
         checkCWD();
         checkArgsNum(args, 2);
-     repo.rmRemote(args[1]);
+     //repo.rmRemote(args[1]);
     } else if (firstArg == "add") {
         checkCWD();
         checkArgsNum(args, 2);
@@ -70,52 +70,52 @@ int main(int argc, char* argv[]) {
     } else if (firstArg == "status") {
         checkCWD();
         checkArgsNum(args, 1);
-     repo.status();
+    // repo.status();
     } else if (firstArg == "checkout") {
         checkCWD();
         if (args.size() == 2) {
-         repo.checkoutBranch(args[1]);
+         //repo.checkoutBranch(args[1]);
         } else if (args.size() == 3) {
             if (args[1] != "--") {
                 Utils::exitWithMessage("Incorrect operands.");
             }
-         repo.checkoutFile(args[2]);
+        repo.checkoutFile(args[2]);
         } else if (args.size() == 4) {
             if (args[2] != "--") {
                 Utils::exitWithMessage("Incorrect operands.");
             }
-         repo.checkoutFileInCommit(args[1], args[3]);
+        repo.checkoutFileInCommit(args[1], args[3]);
         } else {
             Utils::exitWithMessage("Incorrect operands.");
         }
     } else if (firstArg == "branch") {
         checkCWD();
         checkArgsNum(args, 2);
-     repo.branch(args[1]);
+    // repo.branch(args[1]);
     } else if (firstArg == "rm-branch") {
         checkCWD();
         checkArgsNum(args, 2);
-     repo.rmBranch(args[1]);
+    // repo.rmBranch(args[1]);
     } else if (firstArg == "reset") {
         checkCWD();
         checkArgsNum(args, 2);
-     repo.reset(args[1]);
+    // repo.reset(args[1]);
     } else if (firstArg == "merge") {
         checkCWD();
         checkArgsNum(args, 2);
-     repo.merge(args[1]);
+    // repo.merge(args[1]);
     } else if (firstArg == "push") {
         checkCWD();
         checkArgsNum(args, 3);
-     repo.push(args[1], args[2]);
+    // repo.push(args[1], args[2]);
     } else if (firstArg == "fetch") {
         checkCWD();
         checkArgsNum(args, 3);
-     repo.fetch(args[1], args[2]);
+    // repo.fetch(args[1], args[2]);
     } else if (firstArg == "pull") {
         checkCWD();
         checkArgsNum(args, 3);
-     repo.pull(args[1], args[2]);
+    // repo.pull(args[1], args[2]);
     } else {
         std::cout << "No command with that name exists." << std::endl;
         return 0;

@@ -184,7 +184,7 @@ void Repository::globalLog(){
     }//将储存在objects中的文件扫一遍，包括commit和blob和stage
     return;
 }
-void find(std::string commit_message){
+void Repository::find(std::string commit_message){
     size_t pos1=commit_message.find_first_of("\"");
     size_t pos2=commit_message.find_last_of("\"");
     std::string message;
@@ -224,6 +224,64 @@ void find(std::string commit_message){
     if(!has_found){
         Utils::exitWithMessage("Found no commit with that message.");
     }
+    return;
+}
+void Repository::checkoutFile(std::string filename){
+    std::string commit_id=getCommitIdFromHEAD();
+    Commit current_commit;
+    blob loading_blob;
+    current_commit=current_commit.load(commit_id);
+    auto current_files=current_commit.getTrackedFiles();
+    //先将commit给load出来
+    bool has_found=false;
+    for(auto&[_filename,_blob_id]:current_files){
+        if(filename==_filename){
+            loading_blob.load_blob(_blob_id);
+            has_found=true;
+            break;
+        }
+    }
+    if(!has_found){
+        Utils::exitWithMessage("File does not exist in that commit.");
+    }
+    //寻找文件
+    std::string path=static_cast<std::string>(std::filesystem::current_path());
+    Utils::writeContents(path+filename,loading_blob.getContent());
+    return;
+    //写入文件
+}
+void Repository::checkoutFileInCommit(std::string commit_id,std::string filename){
+    std::string path=getGitliteDir();
+    path=Utils::join(path,"objects");
+    auto filenames=Utils::plainFilenamesIn(path);
+    Commit loading_commit;
+    bool has_found_commit=false;
+    for(auto _commit_id:filenames){
+        if(_commit_id.substr(0,6)==commit_id){
+            has_found_commit=true;
+            loading_commit=loading_commit.load(_commit_id);
+            break;
+        }
+    }
+    if(!has_found_commit){
+        Utils::exitWithMessage("No commit with that id exists.");
+    }
+    //先找到对应id的commit
+    blob loading_blob;
+    auto current_files=loading_commit.getTrackedFiles();
+    bool has_found_file=false;
+    for(auto&[_filename,_blob_id]:current_files){
+        if(filename==_filename){
+            loading_blob.load_blob(_blob_id);
+            has_found_file=true;
+            break;
+        }
+    }
+    if(!has_found_file){
+        Utils::exitWithMessage("File does not exist in that commit.");
+    }
+    std::string cwd=static_cast<std::string>(std::filesystem::current_path());
+    Utils::writeContents(cwd+filename,loading_blob.getContent());
     return;
 }
 
@@ -305,5 +363,12 @@ void blob::save_blob(blob){
     std::string cwd=static_cast<std::string>(std::filesystem::current_path());
     std::string path=Utils::join(cwd,".gitlite","objects",this->blob_id);
     Utils::writeContents(path,this->blob_contents);
+    return;
+}
+void blob::load_blob(std::string blob_id){
+    std::string path=getGitliteDir();
+    path=Utils::join(path,"objects",blob_id);
+    std::string content=Utils::readContentsAsString(path);
+    this->blob_contents=content;
     return;
 }

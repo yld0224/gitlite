@@ -13,6 +13,7 @@ class blob{
     std::string getContent(){return blob_contents;}
     std::string getID(){return blob_id;}
     void save_blob(blob);
+    void load_blob(std::string blob_id);
 };
 class stage{
     public:
@@ -42,19 +43,8 @@ class Repository{
     void log();
     void globalLog();
     void find(std::string commit_message);
-    void status();
-    void checkoutBranch(std::string);
-    void checkoutFile(std::string);
-    void checkoutFileInCommit(std::string,std::string);
-    void branch(std::string);
-    void rmBranch(std::string);
-    void reset(std::string);
-    void merge(std::string);
-    void push(std::string,std::string);
-    void fetch(std::string,std::string);
-    void pull(std::string,std::string);
-    void addRemote(std::string,std::string);
-    void rmRemote(std::string);
+    void checkoutFile(std::string filename);
+    void checkoutFileInCommit(std::string commit_id,std::string filename);
 };
 std::string getGitliteDir();//返回gitlite的文件路径
 std::string getPathToBranch();//返回到当前branch的路径
