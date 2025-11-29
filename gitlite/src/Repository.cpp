@@ -228,27 +228,7 @@ void Repository::find(std::string commit_message){
 }
 void Repository::checkoutFile(std::string filename){
     std::string commit_id=getCommitIdFromHEAD();
-    Commit current_commit;
-    blob loading_blob;
-    current_commit=current_commit.load(commit_id);
-    auto current_files=current_commit.getTrackedFiles();
-    //先将commit给load出来
-    bool has_found=false;
-    for(auto&[_filename,_blob_id]:current_files){
-        if(filename==_filename){
-            loading_blob.load_blob(_blob_id);
-            has_found=true;
-            break;
-        }
-    }
-    if(!has_found){
-        Utils::exitWithMessage("File does not exist in that commit.");
-    }
-    //寻找文件
-    std::string path=static_cast<std::string>(std::filesystem::current_path());
-    Utils::writeContents(path+filename,loading_blob.getContent());
-    return;
-    //写入文件
+    checkoutFileInCommit(commit_id,filename);
 }
 void Repository::checkoutFileInCommit(std::string commit_id,std::string filename){
     std::string path=getGitliteDir();
@@ -257,7 +237,7 @@ void Repository::checkoutFileInCommit(std::string commit_id,std::string filename
     Commit loading_commit;
     bool has_found_commit=false;
     for(auto _commit_id:filenames){
-        if(_commit_id.substr(0,6)==commit_id){
+        if(_commit_id.substr(0,commit_id.length())==commit_id){//防止压缩的id长度不相等报错
             has_found_commit=true;
             loading_commit=loading_commit.load(_commit_id);
             break;
@@ -281,7 +261,8 @@ void Repository::checkoutFileInCommit(std::string commit_id,std::string filename
         Utils::exitWithMessage("File does not exist in that commit.");
     }
     std::string cwd=static_cast<std::string>(std::filesystem::current_path());
-    Utils::writeContents(cwd+filename,loading_blob.getContent());
+    cwd=Utils::join(cwd,filename);
+    Utils::writeContents(cwd,loading_blob.getContent());
     return;
 }
 
