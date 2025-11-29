@@ -172,7 +172,8 @@ void Repository::globalLog(){
     filenames=Utils::plainFilenamesIn(path);
     for(auto filename:filenames){
         std::stringstream ss;
-        ss<<Utils::readContentsAsString(filename);
+        std::string fullpath=Utils::join(path,filename);
+        ss<<Utils::readContentsAsString(fullpath);
         std::string line;
         if(std::getline(ss,line)){
             if(line.substr(0,9)=="timestamp"){
@@ -202,7 +203,8 @@ void Repository::find(std::string commit_message){
     bool has_found=false;
     for(auto filename:filenames){
         std::stringstream ss;
-        ss<<Utils::readContentsAsString(filename);
+        std::string fullpath=Utils::join(path,filename);
+        ss<<Utils::readContentsAsString(fullpath);
         std::string line;
         std::string essay;
         if(std::getline(ss,line)){

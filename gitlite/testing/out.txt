@@ -205,3 +205,610 @@ samples/6-status-05.in:
 status: 
 Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', 'f.txt', '']
 Actual: 
+samples/1-add-01.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: 
+samples/1-add-02.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: 
+samples/2-find-01.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/2-find-02.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/2-global-log-01.in: 
+global-log: 
+Expected: ['(?:(?:.|\\n)*(?:\\n|\\Z)|\\A|\\Z)===\ncommit 3c4f0aa454d0ca16a9f0f158db483d7830b9600c\nDate: Sun Nov 30 01:36:48 2025 [-+]0800\nAdd h\n?(?:(?:.|\\n)*(?:\\n|\\Z)|\\A|\\Z)']
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  must be a normal file
+Aborted (core dumped)
+
+samples/3-checkout-03.in: 
+status: 
+Expected: ['=== Branches ===', '\\*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '([^\\n]*(?=\\n|\\Z)\\n\\r?)?', '=== Untracked Files ===', '']
+Actual: 
+samples/3-checkout-04.in: 
+checkout foobar: 
+Expected: ['No such branch exists.']
+Actual: 
+samples/3-status-01.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: 
+samples/3-status-02.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', 'f.txt', 'g.txt', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: 
+samples/3-status-03.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/3-status-04.in: 
+status: 
+Expected: ['=== Branches ===', '\\*master', '', '=== Staged Files ===', 'g.txt', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '(?:(?:.|\\n)*(?:\\n|\\Z)|\\A|\\Z)', '']
+Actual: 
+samples/3-status-05.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/3-status-06.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/3-status.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: 
+samples/4-branch-02.in: 
+branch other: 
+Expected: ['A branch with that name already exists.']
+Actual: 
+samples/4-branch-03.in: 
+checkout master: 
+Expected: ['There is an untracked file in the way; delete it, or add and commit it first.']
+Actual: 
+samples/4-find-03.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/4-global-log-02.in: 
+global-log: 
+Expected: ['(?:(?:.|\\n)*(?:\\n|\\Z)|\\A|\\Z)===\ncommit 8281be6458b2915f97429c91f8323a10ba4b0286\nDate: Sun Nov 30 01:36:57 2025 [-+]0800\nAdd h\n?(?:(?:.|\\n)*(?:\\n|\\Z)|\\A|\\Z)']
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  must be a normal file
+Aborted (core dumped)
+
+samples/4-reset-01.in: 
+rm g.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/4-reset-02.in: 
+rm g.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/4-rm-branch-01.in: 
+checkout other: 
+Expected: ['No such branch exists.']
+Actual: 
+samples/4-rm-branch-02.in: 
+rm-branch other: 
+Expected: ['Cannot remove the current branch.']
+Actual: 
+samples/5-merge-01.in: 
+rm g.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/5-merge-02.in: 
+rm g.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/5-merge-03.in: 
+rm g.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/5-merge-04.in: 
+rm g.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/5-merge-05.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/5-merge-06.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/5-merge-07.in: 
+merge master: 
+Expected: ['Encountered a merge conflict.']
+Actual: 
+samples/5-merge-08.in: 
+rm C.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/6-remote-01.in: 
+log: 
+Expected: ['===', 'commit a52c574b97b3dcac17a5df1c1d7432dcda0680c4', 'Date: \\w\\w\\w \\w\\w\\w \\d+ \\d\\d:\\d\\d:\\d\\d \\d\\d\\d\\d [-+]\\d\\d\\d\\d', 'Two files', '', '===', 'commit 140e3f3af555160ae48e18d874bae3e8195117b2', 'Date: \\w\\w\\w \\w\\w\\w \\d+ \\d\\d:\\d\\d:\\d\\d \\d\\d\\d\\d [-+]\\d\\d\\d\\d', 'initial commit', '']
+Actual: ===
+commit da30597a3b39fca059db3f78b4bcd63783bab6eb
+Date: Sun Nov 30 01:37:12 2025 +0800
+Add k in repo 2
+
+===
+commit 140e3f3af555160ae48e18d874bae3e8195117b2
+Date: Thu Jan 01 00:00:00 1970 +0000
+initial commit
+
+
+samples/6-remote-02.in: 
+log: 
+Expected: ['===', 'commit ([a-f0-9]+)[ \\t]*\\n(?:Merge:\\s+[0-9a-f]{7}\\s+[0-9a-f]{7}[ ]*\\n)?Date: \\w\\w\\w \\w\\w\\w \\d+ \\d\\d:\\d\\d:\\d\\d \\d\\d\\d\\d [-+]\\d\\d\\d\\d', 'Merged R1/master into master\\.', '', '(?:(?:.|\\n)*(?:\\n|\\Z)|\\A|\\Z)']
+Actual: ===
+commit 081ead3e23abc526896149f9298e2580704377e8
+Date: Sun Nov 30 01:37:12 2025 +0800
+Add h
+
+===
+commit 140e3f3af555160ae48e18d874bae3e8195117b2
+Date: Thu Jan 01 00:00:00 1970 +0000
+initial commit
+
+
+samples/6-remote-03.in: 
+add-remote R1 ../D1/.gitlite: 
+Expected: ['A remote with that name already exists.']
+Actual: 
+samples/6-status-05.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', 'f.txt', '']
+Actual: 
+samples/1-add-01.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: 
+samples/1-add-02.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: 
+samples/2-find-01.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/2-find-02.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/2-global-log-01.in: 
+global-log: 
+Expected: ['(?:(?:.|\\n)*(?:\\n|\\Z)|\\A|\\Z)===\ncommit c29388faa03df205029bb24d106cb901ed6575b7\nDate: Sun Nov 30 01:47:45 2025 [-+]0800\nAdd h\n?(?:(?:.|\\n)*(?:\\n|\\Z)|\\A|\\Z)']
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  must be a normal file
+Aborted (core dumped)
+
+samples/3-checkout-03.in: 
+status: 
+Expected: ['=== Branches ===', '\\*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '([^\\n]*(?=\\n|\\Z)\\n\\r?)?', '=== Untracked Files ===', '']
+Actual: 
+samples/3-checkout-04.in: 
+checkout foobar: 
+Expected: ['No such branch exists.']
+Actual: 
+samples/3-status-01.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: 
+samples/3-status-02.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', 'f.txt', 'g.txt', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: 
+samples/3-status-03.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/3-status-04.in: 
+status: 
+Expected: ['=== Branches ===', '\\*master', '', '=== Staged Files ===', 'g.txt', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '(?:(?:.|\\n)*(?:\\n|\\Z)|\\A|\\Z)', '']
+Actual: 
+samples/3-status-05.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/3-status-06.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/3-status.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: 
+samples/4-branch-02.in: 
+branch other: 
+Expected: ['A branch with that name already exists.']
+Actual: 
+samples/4-branch-03.in: 
+checkout master: 
+Expected: ['There is an untracked file in the way; delete it, or add and commit it first.']
+Actual: 
+samples/4-find-03.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/4-global-log-02.in: 
+global-log: 
+Expected: ['(?:(?:.|\\n)*(?:\\n|\\Z)|\\A|\\Z)===\ncommit 38d0abe04db2e11806dbb6e7cffafba6d98a383f\nDate: Sun Nov 30 01:47:54 2025 [-+]0800\nAdd h\n?(?:(?:.|\\n)*(?:\\n|\\Z)|\\A|\\Z)']
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  must be a normal file
+Aborted (core dumped)
+
+samples/4-reset-01.in: 
+rm g.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/4-reset-02.in: 
+rm g.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/4-rm-branch-01.in: 
+checkout other: 
+Expected: ['No such branch exists.']
+Actual: 
+samples/4-rm-branch-02.in: 
+rm-branch other: 
+Expected: ['Cannot remove the current branch.']
+Actual: 
+samples/5-merge-01.in: 
+rm g.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/5-merge-02.in: 
+rm g.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/5-merge-03.in: 
+rm g.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/5-merge-04.in: 
+rm g.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/5-merge-05.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/5-merge-06.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/5-merge-07.in: 
+merge master: 
+Expected: ['Encountered a merge conflict.']
+Actual: 
+samples/5-merge-08.in: 
+rm C.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/6-remote-01.in: 
+log: 
+Expected: ['===', 'commit dd4e9b14b8ed36baded513050562db07728f0d25', 'Date: \\w\\w\\w \\w\\w\\w \\d+ \\d\\d:\\d\\d:\\d\\d \\d\\d\\d\\d [-+]\\d\\d\\d\\d', 'Two files', '', '===', 'commit 140e3f3af555160ae48e18d874bae3e8195117b2', 'Date: \\w\\w\\w \\w\\w\\w \\d+ \\d\\d:\\d\\d:\\d\\d \\d\\d\\d\\d [-+]\\d\\d\\d\\d', 'initial commit', '']
+Actual: ===
+commit 6c4961d7028e354677798e00da4383e3b3320d11
+Date: Sun Nov 30 01:48:10 2025 +0800
+Add k in repo 2
+
+===
+commit 140e3f3af555160ae48e18d874bae3e8195117b2
+Date: Thu Jan 01 00:00:00 1970 +0000
+initial commit
+
+
+samples/6-remote-02.in: 
+log: 
+Expected: ['===', 'commit ([a-f0-9]+)[ \\t]*\\n(?:Merge:\\s+[0-9a-f]{7}\\s+[0-9a-f]{7}[ ]*\\n)?Date: \\w\\w\\w \\w\\w\\w \\d+ \\d\\d:\\d\\d:\\d\\d \\d\\d\\d\\d [-+]\\d\\d\\d\\d', 'Merged R1/master into master\\.', '', '(?:(?:.|\\n)*(?:\\n|\\Z)|\\A|\\Z)']
+Actual: ===
+commit ec5ac8e0a5141c1622fc6dac5a2dd4aa0f9fcedd
+Date: Sun Nov 30 01:48:10 2025 +0800
+Add h
+
+===
+commit 140e3f3af555160ae48e18d874bae3e8195117b2
+Date: Thu Jan 01 00:00:00 1970 +0000
+initial commit
+
+
+samples/6-remote-03.in: 
+add-remote R1 ../D1/.gitlite: 
+Expected: ['A remote with that name already exists.']
+Actual: 
+samples/6-status-05.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', 'f.txt', '']
+Actual: 
+samples/1-add-01.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: 
+samples/1-add-02.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: 
+samples/2-find-01.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/2-find-02.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/3-checkout-03.in: 
+status: 
+Expected: ['=== Branches ===', '\\*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '([^\\n]*(?=\\n|\\Z)\\n\\r?)?', '=== Untracked Files ===', '']
+Actual: 
+samples/3-checkout-04.in: 
+checkout foobar: 
+Expected: ['No such branch exists.']
+Actual: 
+samples/3-status-01.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: 
+samples/3-status-02.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', 'f.txt', 'g.txt', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: 
+samples/3-status-03.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/3-status-04.in: 
+status: 
+Expected: ['=== Branches ===', '\\*master', '', '=== Staged Files ===', 'g.txt', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '(?:(?:.|\\n)*(?:\\n|\\Z)|\\A|\\Z)', '']
+Actual: 
+samples/3-status-05.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/3-status-06.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/3-status.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: 
+samples/4-branch-02.in: 
+branch other: 
+Expected: ['A branch with that name already exists.']
+Actual: 
+samples/4-branch-03.in: 
+checkout master: 
+Expected: ['There is an untracked file in the way; delete it, or add and commit it first.']
+Actual: 
+samples/4-find-03.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/4-reset-01.in: 
+rm g.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/4-reset-02.in: 
+rm g.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/4-rm-branch-01.in: 
+checkout other: 
+Expected: ['No such branch exists.']
+Actual: 
+samples/4-rm-branch-02.in: 
+rm-branch other: 
+Expected: ['Cannot remove the current branch.']
+Actual: 
+samples/5-merge-01.in: 
+rm g.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/5-merge-02.in: 
+rm g.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/5-merge-03.in: 
+rm g.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/5-merge-04.in: 
+rm g.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/5-merge-05.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/5-merge-06.in: 
+rm f.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/5-merge-07.in: 
+merge master: 
+Expected: ['Encountered a merge conflict.']
+Actual: 
+samples/5-merge-08.in: 
+rm C.txt: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/6-remote-01.in: 
+log: 
+Expected: ['===', 'commit 832b87c95a20b954b0d1e6d408e4aa12dcd0c3e5', 'Date: \\w\\w\\w \\w\\w\\w \\d+ \\d\\d:\\d\\d:\\d\\d \\d\\d\\d\\d [-+]\\d\\d\\d\\d', 'Two files', '', '===', 'commit 140e3f3af555160ae48e18d874bae3e8195117b2', 'Date: \\w\\w\\w \\w\\w\\w \\d+ \\d\\d:\\d\\d:\\d\\d \\d\\d\\d\\d [-+]\\d\\d\\d\\d', 'initial commit', '']
+Actual: ===
+commit bff0f2fe08538a56ccffd4652a13559206201a5f
+Date: Sun Nov 30 01:55:55 2025 +0800
+Add k in repo 2
+
+===
+commit 140e3f3af555160ae48e18d874bae3e8195117b2
+Date: Thu Jan 01 00:00:00 1970 +0000
+initial commit
+
+
+samples/6-remote-02.in: 
+log: 
+Expected: ['===', 'commit ([a-f0-9]+)[ \\t]*\\n(?:Merge:\\s+[0-9a-f]{7}\\s+[0-9a-f]{7}[ ]*\\n)?Date: \\w\\w\\w \\w\\w\\w \\d+ \\d\\d:\\d\\d:\\d\\d \\d\\d\\d\\d [-+]\\d\\d\\d\\d', 'Merged R1/master into master\\.', '', '(?:(?:.|\\n)*(?:\\n|\\Z)|\\A|\\Z)']
+Actual: ===
+commit 946de4466f91b71be4f4997b13db4fc1d1760833
+Date: Sun Nov 30 01:55:56 2025 +0800
+Add h
+
+===
+commit 140e3f3af555160ae48e18d874bae3e8195117b2
+Date: Thu Jan 01 00:00:00 1970 +0000
+initial commit
+
+
+samples/6-remote-03.in: 
+add-remote R1 ../D1/.gitlite: 
+Expected: ['A remote with that name already exists.']
+Actual: 
+samples/6-status-05.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', 'f.txt', '']
+Actual: 
