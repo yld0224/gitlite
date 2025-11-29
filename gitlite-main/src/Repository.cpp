@@ -19,7 +19,8 @@ void Repository::init(){
         std::string initial_id=initial_commit.getID();
         Utils::writeContents(path+"/refs/heads/master",initial_id);
         Utils::writeContents(path+"/HEAD","ref:refs/heads/master");
-    }
+    }//初始化仓库，创建基础文件夹，提交初始commit并且初始化头指针和分支
+    return;
 }
 void Repository::add(std::string filename){
     std::string cwd=static_cast<std::string>(std::filesystem::current_path());
@@ -180,6 +181,45 @@ void Repository::globalLog(){
                 current_commit.showCommitInfo();
             }
         }
+    }//将储存在objects中的文件扫一遍，包括commit和blob和stage
+    return;
+}
+void find(std::string commit_message){
+    size_t pos1=commit_message.find_first_of("\"");
+    size_t pos2=commit_message.find_last_of("\"");
+    std::string message;
+    size_t len=commit_message.length();
+    if(pos1==0&&pos2==len-1){
+        message=commit_message.substr(1,len-2);
+    }else{
+        message=commit_message;
+    }
+    std::vector<std::string> filenames;
+    std::string path=getGitliteDir();
+    path=Utils::join(path,"objects");
+    filenames=Utils::plainFilenamesIn(path);
+    bool has_found=false;
+    for(auto filename:filenames){
+        std::stringstream ss;
+        ss<<Utils::readContentsAsString(filename);
+        std::string line;
+        std::string essay;
+        while(std::getline(ss,line)){
+           if(line.substr(0,7)=="message"){
+                essay=line.substr(9);
+                break;
+            }
+        }
+        std::vector<int> pmt=getPMT(message);
+        if(KMP(message,essay,pmt)){
+            has_found=true;
+            Commit loading_commit;
+            loading_commit.load(filename);
+            std::cout<<loading_commit.getID()<<std::endl;
+        }
+    }
+    if(!has_found){
+        Utils::exitWithMessage("Found no commit with that message.");
     }
     return;
 }
@@ -263,4 +303,40 @@ void blob::save_blob(blob){
     std::string path=Utils::join(cwd,".gitlite","objects",this->blob_id);
     Utils::writeContents(path,this->blob_contents);
     return;
+}
+std::vector<int> getPMT(std::string s){
+    int len=s.length();
+    std::vector<int> tmp(len,0);
+    int i=1,j=0;
+    while(i<len){
+        if(s[i]==s[j]){
+            ++i;++j;
+            tmp[i]=j;
+        }else{
+            if(j!=0){
+                j=tmp[j-1];
+            }else{
+                ++i;
+            }
+        }
+    }
+    return tmp;
+}
+bool KMP(std::string t,std::string s,std::vector<int> pmt){
+    int i=0;int j=0;
+    while(i<s.length()&&j<t.length()){
+        if(s[i]==t[j]){
+            ++i;++j;
+        }else{
+            if(j!=0){
+                j=pmt[j-1];
+            }else{
+                ++i;
+            }
+        }
+        if(j==t.length()){
+            return true;
+        }
+    }
+    return false;
 }
