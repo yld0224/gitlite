@@ -159,7 +159,7 @@ void Repository::log(){
     auto parents=current_commit.getParents();
     while(!parents.empty()){
         current_commit.showCommitInfo();
-        current_commit.load(parents[0]);
+        current_commit=current_commit.load(parents[0]);
         parents=current_commit.getParents();
     }//当前commit还存在父节点
     current_commit.showCommitInfo();//初始commit
@@ -177,7 +177,7 @@ void Repository::globalLog(){
         if(std::getline(ss,line)){
             if(line.substr(0,9)=="timestamp"){
                 Commit current_commit;
-                current_commit.load(filename);
+                current_commit=current_commit.load(filename);
                 current_commit.showCommitInfo();
             }
         }
@@ -194,6 +194,7 @@ void find(std::string commit_message){
     }else{
         message=commit_message;
     }
+    //先去除message上可能的引号
     std::vector<std::string> filenames;
     std::string path=getGitliteDir();
     path=Utils::join(path,"objects");
@@ -204,17 +205,19 @@ void find(std::string commit_message){
         ss<<Utils::readContentsAsString(filename);
         std::string line;
         std::string essay;
+        if(std::getline(ss,line)){
+            if(line.substr(0,9)!="timestamp"){continue;}
+        }//不是commit文件
         while(std::getline(ss,line)){
            if(line.substr(0,7)=="message"){
                 essay=line.substr(9);
                 break;
             }
         }
-        std::vector<int> pmt=getPMT(message);
-        if(KMP(message,essay,pmt)){
+        if(essay.find(message)){
             has_found=true;
             Commit loading_commit;
-            loading_commit.load(filename);
+            loading_commit=loading_commit.load(filename);
             std::cout<<loading_commit.getID()<<std::endl;
         }
     }
@@ -303,40 +306,4 @@ void blob::save_blob(blob){
     std::string path=Utils::join(cwd,".gitlite","objects",this->blob_id);
     Utils::writeContents(path,this->blob_contents);
     return;
-}
-std::vector<int> getPMT(std::string s){
-    int len=s.length();
-    std::vector<int> tmp(len,0);
-    int i=1,j=0;
-    while(i<len){
-        if(s[i]==s[j]){
-            ++i;++j;
-            tmp[i]=j;
-        }else{
-            if(j!=0){
-                j=tmp[j-1];
-            }else{
-                ++i;
-            }
-        }
-    }
-    return tmp;
-}
-bool KMP(std::string t,std::string s,std::vector<int> pmt){
-    int i=0;int j=0;
-    while(i<s.length()&&j<t.length()){
-        if(s[i]==t[j]){
-            ++i;++j;
-        }else{
-            if(j!=0){
-                j=pmt[j-1];
-            }else{
-                ++i;
-            }
-        }
-        if(j==t.length()){
-            return true;
-        }
-    }
-    return false;
 }

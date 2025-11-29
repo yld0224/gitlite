@@ -60,6 +60,4 @@ std::string getGitliteDir();//返回gitlite的文件路径
 std::string getPathToBranch();//返回到当前branch的路径
 bool isDetachedHEAD();
 std::string getCommitIdFromHEAD();//返回HEAD指针里的文件内容
-std::vector<int> getPMT(std::string s);//提供给find命令 
-bool KMP(std::string t,std::string s,std::vector<int> pmt);
 #endif // REPOSITORY_H
