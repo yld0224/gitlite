@@ -111,6 +111,34 @@ void Repository::commit(std::string message){
     }
     //最后应该要移动头指针和分支指针
 }
+void Repository::rm(std::string filename){
+    std::string path=getGitliteDir();
+    stage loading_stage;
+    loading_stage=stage::load_stage();
+    Commit loading_commit;
+    std::string commit_id=getCommitIdFromHEAD();
+    loading_commit=Commit::load(commit_id);
+    auto current_tracked_files=loading_commit.getTrackedFiles();
+    auto iter=loading_stage.added_files.find(filename);
+    auto iter1=current_tracked_files.find(filename);
+    if(iter==loading_stage.added_files.end()&&iter1==current_tracked_files.end()){
+        Utils::exitWithMessage("No reason to remove the file.");
+    }
+    if(iter!=loading_stage.added_files.end()){
+        if(iter1==current_tracked_files.end()){
+            loading_stage.added_files.erase(filename);
+            loading_stage.save_stage(loading_stage);
+            return;
+        }
+    }else{
+        if(iter1!=current_tracked_files.end()){
+            std::string blob_id=iter->second;
+            loading_stage.removed_files[filename]=blob_id;
+            loading_stage.save_stage(loading_stage);
+            return;
+        }
+    }
+}
 
 
 

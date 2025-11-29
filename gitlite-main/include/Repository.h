@@ -40,7 +40,7 @@ class Repository{
     void rmRemote(std::string);
     void add(std::string filename);//将文件放上stage
     void commit(std::string message);
-    void rm(std::string);
+    void rm(std::string filename);
     void log();
     void globalLog();
     void find(std::string);
