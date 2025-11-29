@@ -155,7 +155,7 @@ void Repository::rm(std::string filename){
 void Repository::log(){
     Commit current_commit;
     std::string commit_id=getCommitIdFromHEAD();
-    current_commit.load(commit_id);
+    current_commit=current_commit.load(commit_id);
     auto parents=current_commit.getParents();
     while(!parents.empty()){
         current_commit.showCommitInfo();
@@ -210,11 +210,11 @@ void find(std::string commit_message){
         }//不是commit文件
         while(std::getline(ss,line)){
            if(line.substr(0,7)=="message"){
-                essay=line.substr(9);
+                essay=line.substr(8);
                 break;
             }
         }
-        if(essay.find(message)){
+        if(essay.find(message)!=std::string::npos){
             has_found=true;
             Commit loading_commit;
             loading_commit=loading_commit.load(filename);

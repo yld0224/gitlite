@@ -14,7 +14,7 @@ class Commit{
     std::map<std::string,std::string> tracked_files;//文件名，blod_id
     std::vector<std::string> parents;
     public:
-    Commit():timestamp("Thu Jan 01 00:00:00 1970 +0000"),message("Initial Commit"){};
+    Commit():timestamp("Thu Jan 01 00:00:00 1970 +0000"),message("initial commit"){};
     Commit(const Commit &other){
         timestamp=other.timestamp;
         message=other.message;
