@@ -150,6 +150,18 @@ void Repository::rm(std::string filename){
         }
     }
 }
+void Repository::log(){
+    Commit current_commit;
+    std::string commit_id=getCommitIdFromHEAD();
+    current_commit.load(commit_id);
+    auto parents=current_commit.getParents();
+    while(!parents.empty()){
+        current_commit.showCommitInfo();
+        current_commit.load(parents[0]);
+        parents=current_commit.getParents();
+    }//当前commit还存在父节点
+    current_commit.showCommitInfo();//初始commit
+}
 
 
 
@@ -168,6 +180,8 @@ std::string getPathToBranch(){
     while(std::getline(ss,line)){
         auto pos=line.find(':');
         pathToBranch=line.substr(pos+1);
+        auto start = pathToBranch.find_first_not_of(" ");
+        if (start != std::string::npos) {pathToBranch = pathToBranch.substr(start);}
     }
     return pathToBranch=Utils::join(cwd,".gitlite",pathToBranch);
 }

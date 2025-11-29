@@ -63,3 +63,15 @@ Commit Commit::load(std::string commit_id){
    loading_commit.commit_id=commit_id;
    return loading_commit;
 }
+void Commit::showCommitInfo(){
+   std::cout<<"==="<<std::endl;
+   std::cout<<"commit "<<this->commit_id<<std::endl;
+   if(this->parents.size()==2){
+      std::string id1=this->parents[0].substr(0,7);
+      std::string id2=this->parents[1].substr(0,7);
+      std::cout<<"Merge: "<<id1<<' '<<id2<<std::endl;
+   }
+   std::cout<<"Date: "<<this->timestamp<<std::endl;
+   std::cout<<this->message<<std::endl;
+   std::cout<<std::endl;
+}

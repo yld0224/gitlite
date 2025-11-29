@@ -36,8 +36,6 @@ class Repository{
     Repository()=default;
     ~Repository()=default;
     void init();//初始化仓库，创建文件夹
-    void addRemote(std::string,std::string);
-    void rmRemote(std::string);
     void add(std::string filename);//将文件放上stage
     void commit(std::string message);
     void rm(std::string filename);
@@ -55,6 +53,8 @@ class Repository{
     void push(std::string,std::string);
     void fetch(std::string,std::string);
     void pull(std::string,std::string);
+    void addRemote(std::string,std::string);
+    void rmRemote(std::string);
 };
 std::string getGitliteDir();//返回gitlite的文件路径
 std::string getPathToBranch();//返回到当前branch的路径

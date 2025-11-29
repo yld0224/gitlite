@@ -54,5 +54,6 @@ class Commit{
         this->message=new_message;
         return;
     }
+    void showCommitInfo();
 };
 #endif // COMMIT_H 
