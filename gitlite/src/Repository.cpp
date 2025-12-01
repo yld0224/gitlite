@@ -367,9 +367,14 @@ void Repository::checkoutBranch(std::string branchname){
             Utils::writeContents(path,loading_blob.getContent());
         }
     }//用checkout分支的文件覆盖工作目录中的文件
-    std::string path=Utils::join(getGitliteDir(),"HEAD");
-    Utils::writeContents(path,branchname);
-    //最后移动头指针的位置
+    std::string pathToHead=Utils::join(getGitliteDir(),"HEAD");
+    std::string message="ref:refs/heads/"+branchname;
+    Utils::writeContents(pathToHead,message);
+    stage new_stage;
+    new_stage=new_stage.load_stage();
+    new_stage.clear();
+    new_stage.save_stage(new_stage);
+    //最后移动头指针的位置,并且清空当前stage
     return;
 }
 
