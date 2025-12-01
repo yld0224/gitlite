@@ -1,0 +1,82 @@
+samples/4-branch-03.in: 
+checkout master: 
+Expected: ['There is an untracked file in the way; delete it, or add and commit it first.']
+Actual: 
+samples/4-reset-02.in: 
+reset bb3c53883268cc9cb7f2fda80f9177d71a78df40: 
+Expected: ['There is an untracked file in the way; delete it, or add and commit it first.']
+Actual: 
+samples/4-rm-branch-01.in: 
+rm-branch other: 
+Expected: []
+Actual: terminate called after throwing an instance of 'std::invalid_argument'
+  what():  not .gitlite working directory
+Aborted (core dumped)
+
+samples/5-merge-01.in: 
+log: 
+Expected: ['===', 'commit ([a-f0-9]+)[ \\t]*\\n(?:Merge:\\s+[0-9a-f]{7}\\s+[0-9a-f]{7}[ ]*\\n)?Date: \\w\\w\\w \\w\\w\\w \\d+ \\d\\d:\\d\\d:\\d\\d \\d\\d\\d\\d [-+]\\d\\d\\d\\d', 'Merged other into master\\.', '', '(?:(?:.|\\n)*(?:\\n|\\Z)|\\A|\\Z)']
+Actual: ===
+commit 433a292098937b96fb1170ec86975f54895c6df4
+Date: Mon Dec 01 14:25:58 2025 +0800
+Add h.txt and remove g.txt
+
+===
+commit 7e6da9ae453a7cea5927f5c9db20afe81500d261
+Date: Mon Dec 01 14:25:58 2025 +0800
+Two files
+
+===
+commit 140e3f3af555160ae48e18d874bae3e8195117b2
+Date: Thu Jan 01 00:00:00 1970 +0000
+initial commit
+
+
+samples/5-merge-02.in: 
+merge other: 
+Expected: ['Encountered a merge conflict.']
+Actual: 
+samples/5-merge-03.in: 
+merge other: 
+Expected: ['Encountered a merge conflict.']
+Actual: 
+samples/5-merge-04.in: 
+merge other: 
+Expected: ['Cannot merge a branch with itself.']
+Actual: 
+samples/5-merge-06.in: 
+merge b1: 
+Expected: ['Given branch is an ancestor of the current branch.']
+Actual: 
+samples/5-merge-07.in: 
+merge master: 
+Expected: ['Encountered a merge conflict.']
+Actual: 
+samples/6-remote-01.in: 
+checkout R1/master: 
+Expected: []
+Actual: No such branch exists.
+
+samples/6-remote-02.in: 
+reset ca880b7761467fbcf4dc503bd5a43e22a970df3b: 
+Expected: []
+Actual: No commit with that id exists.
+
+samples/6-remote-03.in: 
+add-remote R1 ../D1/.gitlite: 
+Expected: ['A remote with that name already exists.']
+Actual: 
+samples/6-status-05.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', 'f.txt', '']
+Actual: === Branches ===
+*master
+
+=== Staged Files ===
+
+=== Removed Files ===
+
+=== Modifications Not Staged For Commit ===
+
+=== Untracked Files ===
+

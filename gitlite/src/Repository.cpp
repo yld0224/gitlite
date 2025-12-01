@@ -465,14 +465,18 @@ void Repository::reset(std::string commit_id){
     }//用checkout分支的文件覆盖工作目录中的文件
     std::string pathToHead=Utils::join(getGitliteDir(),"HEAD");
     std::string message=commit_id;
-    Utils::writeContents(pathToHead,message);
+    if(isDetachedHEAD()){
+        Utils::writeContents(pathToHead,message);//如果是detached，则改变head指针
+    }else{
+        std::string pathToBranch=getPathToBranch();
+        Utils::writeContents(pathToBranch,message);
+    }
     stage new_stage;
     new_stage=new_stage.load_stage();
     new_stage.clear();
     new_stage.save_stage(new_stage);
     //最后移动头指针的位置,并且清空当前stage
     return;
-    //简单复用了checkout的部分代码，但将头指针变成了detached
 }
 
 
