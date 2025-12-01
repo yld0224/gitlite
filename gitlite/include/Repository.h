@@ -45,6 +45,8 @@ class Repository{
     void find(std::string commit_message);
     void checkoutFile(std::string filename);
     void checkoutFileInCommit(std::string commit_id,std::string filename);
+    void status();
+    void checkoutBranch(std::string branchname);
 };
 std::string getGitliteDir();//返回gitlite的文件路径
 std::string getPathToBranch();//返回到当前branch的路径

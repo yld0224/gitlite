@@ -70,11 +70,11 @@ int main(int argc, char* argv[]) {
     } else if (firstArg == "status") {
         checkCWD();
         checkArgsNum(args, 1);
-    // repo.status();
+     repo.status();
     } else if (firstArg == "checkout") {
         checkCWD();
         if (args.size() == 2) {
-         //repo.checkoutBranch(args[1]);
+         repo.checkoutBranch(args[1]);
         } else if (args.size() == 3) {
             if (args[1] != "--") {
                 Utils::exitWithMessage("Incorrect operands.");

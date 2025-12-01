@@ -5,6 +5,7 @@
 #include "../include/GitliteException.h"
 #include <fstream>
 #include <iostream>
+#include <algorithm>
 void Repository::init(){
     std::string cwd=static_cast<std::string>(std::filesystem::current_path());
     std::string path=Utils::join(cwd,".gitlite");
@@ -114,7 +115,7 @@ void Repository::commit(std::string message){
     return;
 }
 void Repository::rm(std::string filename){
-    std::string path=getGitliteDir();
+    std::string path = static_cast<std::string>(std::filesystem::current_path());
     stage loading_stage;
     loading_stage=stage::load_stage();
     Commit loading_commit;
@@ -208,9 +209,10 @@ void Repository::find(std::string commit_message){
         std::string line;
         std::string essay;
         if(std::getline(ss,line)){
-            if(line.substr(0,9)!="timestamp"){continue;}
+            if(line.length()<9||line.substr(0,9)!="timestamp"){continue;}
         }//不是commit文件
         while(std::getline(ss,line)){
+           if(line.length()<7){continue;}
            if(line.substr(0,7)=="message"){
                 essay=line.substr(8);
                 break;
@@ -267,7 +269,109 @@ void Repository::checkoutFileInCommit(std::string commit_id,std::string filename
     Utils::writeContents(cwd,loading_blob.getContent());
     return;
 }
-
+void Repository::status(){
+    std::cout<<"=== Branches ==="<<std::endl;
+    std::string current_branch_name;
+    if(!isDetachedHEAD()){
+        std::string path=getPathToBranch();
+        size_t pos=path.find_last_of("/");
+        current_branch_name=path.substr(pos+1);
+    }
+    if(!current_branch_name.empty()){
+        std::cout<<"*"<<current_branch_name<<std::endl;
+    }
+    std::string path=getGitliteDir();
+    path=Utils::join(path,"refs","heads");
+    auto filenames=Utils::plainFilenamesIn(path);
+    std::sort(filenames.begin(),filenames.end());//字典序
+    for(auto filename:filenames){
+        if(filename!=current_branch_name){
+            std::cout<<filename<<std::endl;
+        }
+    }
+    std::cout<<std::endl;
+    //处理分支列举
+    stage loading_stage;
+    loading_stage=loading_stage.load_stage();
+    std::cout<<"=== Staged Files ==="<<std::endl;
+    for(auto file:loading_stage.added_files){
+        std::cout<<file.first<<std::endl;
+    }
+    std::cout<<std::endl;
+    std::cout<<"=== Removed Files ==="<<std::endl;
+    for(auto file:loading_stage.removed_files){
+        std::cout<<file.first<<std::endl;
+    }
+    std::cout<<std::endl;
+    //处理stage的文件
+    std::cout<<"=== Modifications Not Staged For Commit ==="<<std::endl;
+    std::cout<<std::endl;
+    std::cout<<"=== Untracked Files ==="<<std::endl;
+    //暂时还没到subtask6
+}
+void Repository::checkoutBranch(std::string branchname){
+    std::string path=getGitliteDir();
+    path=Utils::join(path,"refs","heads");
+    auto branchnames=Utils::plainFilenamesIn(path);
+    bool has_found=false;
+    for(auto name:branchnames){
+        if(name==branchname){
+            has_found=true;
+            break;
+        }
+    }
+    if(!has_found){
+        Utils::exitWithMessage("No such branch exists.");
+    }
+    path=Utils::join(path,branchname);
+    if(!isDetachedHEAD()){
+        std::string path=getPathToBranch();
+        size_t pos=path.find_last_of("/");
+        if(path.substr(pos+1)==branchname){
+            Utils::exitWithMessage("No need to checkout the current branch.");
+        }
+    }
+    //处理非法的branchname
+    Commit last_commit;
+    Commit new_commit;
+    last_commit.load(getCommitIdFromHEAD());
+    new_commit.load(Utils::readContentsAsString(path));
+    std::string cwd=static_cast<std::string>(std::filesystem::current_path());
+    auto new_files=new_commit.getTrackedFiles();
+    auto last_files=last_commit.getTrackedFiles();
+    for(auto file:new_files){
+        auto&[filename,blob_id]=file;
+        auto iter=last_files.find(filename);
+        if(iter==last_files.end()){
+            std::string path=Utils::join(cwd,filename);
+            if(Utils::isFile(path))
+            Utils::exitWithMessage("There is an untracked file in the way; delete it, or add and commit it first.");
+        }
+    }//在checkout的commit中，没有被当前commit跟踪，而且在工作目录中
+    for(auto file:last_files){
+        auto&[filename,blob_id]=file;
+        auto iter=new_files.find(filename);
+        if(iter==new_files.end()){
+            std::string path=Utils::join(cwd,filename);
+            if(Utils::isFile(path)){
+                Utils::restrictedDelete(path);
+            }
+        }
+    }//被跟踪但不在checkout的commit的文件中，删除
+    for(auto file:new_files){
+        auto&[filename,blob_id]=file;
+        blob loading_blob;
+        loading_blob.load_blob(blob_id);
+        std::string path=Utils::join(cwd,filename);
+        if(Utils::isFile(path)){
+            Utils::writeContents(path,loading_blob.getContent());
+        }
+    }//用checkout分支的文件覆盖工作目录中的文件
+    std::string path=Utils::join(getGitliteDir(),"HEAD");
+    Utils::writeContents(path,branchname);
+    //最后移动头指针的位置
+    return;
+}
 
 
 //辅助功能
