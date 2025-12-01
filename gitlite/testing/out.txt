@@ -3,27 +3,20 @@ checkout master:
 Expected: ['There is an untracked file in the way; delete it, or add and commit it first.']
 Actual: 
 samples/4-reset-02.in: 
-reset bb3c53883268cc9cb7f2fda80f9177d71a78df40: 
+reset 937acf869e966fc948b30cb29981509e62439c35: 
 Expected: ['There is an untracked file in the way; delete it, or add and commit it first.']
 Actual: 
-samples/4-rm-branch-01.in: 
-rm-branch other: 
-Expected: []
-Actual: terminate called after throwing an instance of 'std::invalid_argument'
-  what():  not .gitlite working directory
-Aborted (core dumped)
-
 samples/5-merge-01.in: 
 log: 
 Expected: ['===', 'commit ([a-f0-9]+)[ \\t]*\\n(?:Merge:\\s+[0-9a-f]{7}\\s+[0-9a-f]{7}[ ]*\\n)?Date: \\w\\w\\w \\w\\w\\w \\d+ \\d\\d:\\d\\d:\\d\\d \\d\\d\\d\\d [-+]\\d\\d\\d\\d', 'Merged other into master\\.', '', '(?:(?:.|\\n)*(?:\\n|\\Z)|\\A|\\Z)']
 Actual: ===
-commit 433a292098937b96fb1170ec86975f54895c6df4
-Date: Mon Dec 01 14:25:58 2025 +0800
+commit 937acf869e966fc948b30cb29981509e62439c35
+Date: Mon Dec 01 14:57:25 2025 +0800
 Add h.txt and remove g.txt
 
 ===
-commit 7e6da9ae453a7cea5927f5c9db20afe81500d261
-Date: Mon Dec 01 14:25:58 2025 +0800
+commit f9dd3a6be41cf6aab787196e06526783d263ef41
+Date: Mon Dec 01 14:57:25 2025 +0800
 Two files
 
 ===
@@ -58,7 +51,7 @@ Expected: []
 Actual: No such branch exists.
 
 samples/6-remote-02.in: 
-reset ca880b7761467fbcf4dc503bd5a43e22a970df3b: 
+reset d5f2cd08e71924471068be574835b9979940bc84: 
 Expected: []
 Actual: No commit with that id exists.
 

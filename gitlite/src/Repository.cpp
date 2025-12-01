@@ -354,7 +354,7 @@ void Repository::checkoutBranch(std::string branchname){
         if(iter==new_files.end()){
             std::string path=Utils::join(cwd,filename);
             if(Utils::isFile(path)){
-                Utils::restrictedDelete(path);
+                std::remove(path.c_str());
             }
         }
     }//被跟踪但不在checkout的commit的文件中，删除
@@ -363,9 +363,7 @@ void Repository::checkoutBranch(std::string branchname){
         blob loading_blob;
         loading_blob.load_blob(blob_id);
         std::string path=Utils::join(cwd,filename);
-        if(Utils::isFile(path)){
-            Utils::writeContents(path,loading_blob.getContent());
-        }
+        Utils::writeContents(path,loading_blob.getContent());//bugfix:不应该检查文件是否存在
     }//用checkout分支的文件覆盖工作目录中的文件
     std::string pathToHead=Utils::join(getGitliteDir(),"HEAD");
     std::string message="ref:refs/heads/"+branchname;
@@ -410,7 +408,7 @@ void Repository::rmBranch(std::string branchname){
         }
     }//处理异常情况
     path=Utils::join(path,branchname);
-    Utils::restrictedDelete(path);
+    std::remove(path.c_str());
     //简单将分支的指针删除
     return;
 }
@@ -450,7 +448,7 @@ void Repository::reset(std::string commit_id){
         if(iter==new_files.end()){
             std::string path=Utils::join(cwd,filename);
             if(Utils::isFile(path)){
-                Utils::restrictedDelete(path);
+                std::remove(path.c_str());
             }
         }
     }//被跟踪但不在checkout的commit的文件中，删除
@@ -459,9 +457,7 @@ void Repository::reset(std::string commit_id){
         blob loading_blob;
         loading_blob.load_blob(blob_id);
         std::string path=Utils::join(cwd,filename);
-        if(Utils::isFile(path)){
-            Utils::writeContents(path,loading_blob.getContent());
-        }
+        Utils::writeContents(path,loading_blob.getContent());//bugfix:不应检查文件是否存在
     }//用checkout分支的文件覆盖工作目录中的文件
     std::string pathToHead=Utils::join(getGitliteDir(),"HEAD");
     std::string message=commit_id;
