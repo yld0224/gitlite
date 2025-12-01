@@ -377,6 +377,103 @@ void Repository::checkoutBranch(std::string branchname){
     //最后移动头指针的位置,并且清空当前stage
     return;
 }
+void Repository::branch(std::string branchname){
+    std::string commit_id=getCommitIdFromHEAD();//得到目前commitid
+    std::string path=getGitliteDir();
+    path=Utils::join(path,"refs","heads",branchname);
+    if(Utils::isFile(path)){
+        Utils::exitWithMessage("A branch with that name already exists.");
+    }
+    Utils::writeContents(path,commit_id);//在heads里面创建新的分支
+    return;
+}
+void Repository::rmBranch(std::string branchname){
+    std::string path=getGitliteDir();
+    path=Utils::join(path,"refs","heads");
+    auto filenames=Utils::plainFilenamesIn(path);
+    bool has_found=false;
+    for(auto filename:filenames){
+        if(filename==branchname){
+            has_found=true;
+            break;
+        }
+    }
+    if(!has_found){
+        Utils::exitWithMessage("A branch with that name does not exist.");
+    }
+    if(!isDetachedHEAD()){
+        std::string current_path=getPathToBranch();
+        size_t pos=current_path.find_last_of("/");
+        std::string current_branchname=current_path.substr(pos+1);
+        if(branchname==current_branchname){
+            Utils::exitWithMessage("Cannot remove the current branch.");
+        }
+    }//处理异常情况
+    path=Utils::join(path,branchname);
+    Utils::restrictedDelete(path);
+    //简单将分支的指针删除
+    return;
+}
+void Repository::reset(std::string commit_id){
+    std::string path=getGitliteDir();
+    path=Utils::join(path,"objects");
+    bool has_found=false;
+    auto filenames=Utils::plainFilenamesIn(path);
+    for(auto filename:filenames){
+        if(filename==commit_id){
+            has_found=true;
+            break;
+        }
+    }
+    if(!has_found){
+        Utils::exitWithMessage("No commit with that id exists.");
+    }//没有找到当前commit_id
+    Commit last_commit;
+    Commit new_commit;
+    last_commit.load(getCommitIdFromHEAD());
+    new_commit.load(commit_id);
+    std::string cwd=static_cast<std::string>(std::filesystem::current_path());
+    auto new_files=new_commit.getTrackedFiles();
+    auto last_files=last_commit.getTrackedFiles();
+    for(auto file:new_files){
+        auto&[filename,blob_id]=file;
+        auto iter=last_files.find(filename);
+        if(iter==last_files.end()){
+            std::string path=Utils::join(cwd,filename);
+            if(Utils::isFile(path))
+            Utils::exitWithMessage("There is an untracked file in the way; delete it, or add and commit it first.");
+        }
+    }//在checkout的commit中，没有被当前commit跟踪，而且在工作目录中
+    for(auto file:last_files){
+        auto&[filename,blob_id]=file;
+        auto iter=new_files.find(filename);
+        if(iter==new_files.end()){
+            std::string path=Utils::join(cwd,filename);
+            if(Utils::isFile(path)){
+                Utils::restrictedDelete(path);
+            }
+        }
+    }//被跟踪但不在checkout的commit的文件中，删除
+    for(auto file:new_files){
+        auto&[filename,blob_id]=file;
+        blob loading_blob;
+        loading_blob.load_blob(blob_id);
+        std::string path=Utils::join(cwd,filename);
+        if(Utils::isFile(path)){
+            Utils::writeContents(path,loading_blob.getContent());
+        }
+    }//用checkout分支的文件覆盖工作目录中的文件
+    std::string pathToHead=Utils::join(getGitliteDir(),"HEAD");
+    std::string message=commit_id;
+    Utils::writeContents(pathToHead,message);
+    stage new_stage;
+    new_stage=new_stage.load_stage();
+    new_stage.clear();
+    new_stage.save_stage(new_stage);
+    //最后移动头指针的位置,并且清空当前stage
+    return;
+    //简单复用了checkout的部分代码，但将头指针变成了detached
+}
 
 
 //辅助功能
