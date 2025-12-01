@@ -334,8 +334,8 @@ void Repository::checkoutBranch(std::string branchname){
     //处理非法的branchname
     Commit last_commit;
     Commit new_commit;
-    last_commit.load(getCommitIdFromHEAD());
-    new_commit.load(Utils::readContentsAsString(path));
+    last_commit=last_commit.load(getCommitIdFromHEAD());
+    new_commit=new_commit.load(Utils::readContentsAsString(path));//bugfix:又不小心丢弃了返回值
     std::string cwd=static_cast<std::string>(std::filesystem::current_path());
     auto new_files=new_commit.getTrackedFiles();
     auto last_files=last_commit.getTrackedFiles();
@@ -428,8 +428,8 @@ void Repository::reset(std::string commit_id){
     }//没有找到当前commit_id
     Commit last_commit;
     Commit new_commit;
-    last_commit.load(getCommitIdFromHEAD());
-    new_commit.load(commit_id);
+    last_commit=last_commit.load(getCommitIdFromHEAD());
+    new_commit=new_commit.load(commit_id);
     std::string cwd=static_cast<std::string>(std::filesystem::current_path());
     auto new_files=new_commit.getTrackedFiles();
     auto last_files=last_commit.getTrackedFiles();
