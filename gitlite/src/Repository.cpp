@@ -474,6 +474,183 @@ void Repository::reset(std::string commit_id){
     //最后移动头指针的位置,并且清空当前stage
     return;
 }
+void merge(std::string branchname){
+    std::string current_branchname;
+    stage current_stage;
+    current_stage=current_stage.load_stage();
+    if(!(current_stage.added_files.empty())||!(current_stage.removed_files.empty())){
+        Utils::exitWithMessage("You have uncommitted changes.");
+    }
+    std::vector<std::string> files_in_heads;
+    std::string heads_path=getGitliteDir();
+    heads_path=Utils::join(heads_path,"ref","heads");
+    files_in_heads=Utils::plainFilenamesIn(heads_path);
+    bool has_found=false;
+    for(auto filename:files_in_heads){
+        if(filename==branchname){
+            has_found=true;
+            break;
+        }
+    }
+    if(!has_found){
+        Utils::exitWithMessage("A branch with that name does not exist.");
+    }
+    if(!isDetachedHEAD()){
+        std::string path=getPathToBranch();
+        size_t pos=path.find_last_of("/");
+        current_branchname=path.substr(pos+1);
+        if(branchname==current_branchname){
+            Utils::exitWithMessage("Cannot merge a branch with itself.");
+        }
+    }//处理merge之前异常情况
+    std::string commit_id=getCommitIdFromHEAD();
+    std::vector<std::string> my_parents;
+    Commit current_commit;
+    current_commit=current_commit.load(commit_id);
+    while(1){
+        auto parents=current_commit.getParents();
+        if(parents.empty()){
+            break;
+        }else{
+            my_parents.push_back(parents[0]);
+        }
+        current_commit=current_commit.load(parents[0]);
+    }
+    current_commit=current_commit.load(commit_id);//重新load回来
+    heads_path=Utils::join(heads_path,branchname);
+    std::string other_commit_id;
+    other_commit_id=Utils::readContentsAsString(heads_path);
+    Commit other_commit;
+    other_commit=other_commit.load(other_commit_id);
+    std::vector<std::string> other_parents;
+    while(1){
+        auto parents=other_commit.getParents();
+        if(parents.empty()){
+            break;
+        }else{
+            other_parents.push_back(parents[0]);
+        }
+        other_commit=other_commit.load(parents[0]);
+    }
+    other_commit=other_commit.load(other_commit_id);
+    for(auto parent:my_parents){
+        if(parent==other_commit_id){
+            Utils::exitWithMessage("Given branch is an ancestor of the current branch.");
+        }
+    }
+    for(auto parent:other_parents){
+        if(parent==commit_id){
+            Repository* repo=new Repository;
+            repo->Repository::checkoutBranch(branchname);
+            delete repo;
+            Utils::exitWithMessage("Current branch fast-forwarded.");
+        }
+    }//两种各自是对方祖先的情况
+    std::string LCA;
+    for(auto my_parent:my_parents){
+        for(auto other_parent:other_parents){
+            if(my_parent==other_parent){
+                LCA=my_parent;
+                break;
+            }
+        }
+    }
+    //找到LCA(这里的逻辑需要修改,因为存在递归合并)
+    Commit parent_commit;
+    parent_commit=parent_commit.load(LCA);
+    auto old_files=parent_commit.getTrackedFiles();
+    auto my_files=current_commit.getTrackedFiles();
+    auto other_files=other_commit.getTrackedFiles();
+    std::string path_to_file=static_cast<std::string>(std::filesystem::current_path());
+    for(auto old_file:old_files){
+       auto my_iter=my_files.find(old_file.first);
+       auto other_iter=other_files.find(old_file.first);
+       if(my_iter!=my_files.end()&&my_iter->second==old_file.second){
+            if(other_iter!=other_files.end()&&other_iter->second!=old_file.second){
+                blob loading_blob;
+                loading_blob.load_blob(other_iter->second);
+                std::string full_filepath=Utils::join(path_to_file,old_file.first);
+                Utils::writeContents(full_filepath,loading_blob.getContent());
+                stage temp_stage;
+                temp_stage=temp_stage.load_stage();
+                temp_stage.added_files[other_iter->first]=other_iter->second;
+                temp_stage.save_stage(temp_stage);
+            }//other分支修改了而当前分支没修改,听other的
+        }
+        if(my_iter!=my_files.end()&&my_iter->second!=old_file.second){
+            if(other_iter!=other_files.end()&&other_iter->second==old_file.second){
+                continue;
+            }
+        }//当前分支修改了而other没修改，听当前分支的
+        if(my_iter!=my_files.end()&&other_iter!=other_files.end()){
+            if(my_iter->second==other_iter->second){
+                continue;//当前分支和other分支做出相同修改，不改变
+            }else{
+                std::cout<<"Encountered a merge conflict."<<std::endl;
+                stage temp_stage;
+                temp_stage=temp_stage.load_stage();
+                temp_stage.added_files[old_file.first]=markConflicts(old_file.first,my_iter->second,other_iter->second);
+                temp_stage.save_stage(temp_stage);
+            }//当前分支和other分支做出不同修改，冲突
+        }
+        if(my_iter==my_files.end()&&other_iter==other_files.end()){
+            continue;
+        }//被两个分支一起删除的文件
+        if(my_iter!=my_files.end()&&my_iter->second==old_file.second){
+            if(other_iter==other_files.end()){
+                std::string full_filepath=Utils::join(path_to_file,old_file.first);
+                Utils::restrictedDelete(full_filepath);
+            }
+        }//当前分支没有修改但被other分支删除的，听other的
+        if(my_iter==my_files.end()&&other_iter!=other_files.end()&&other_iter->second!=old_file.second){
+            std::cout<<"Encountered a merge conflict."<<std::endl;
+            markConflicts(old_file.first,"deleted!",other_iter->second);
+            stage temp_stage;
+            temp_stage=temp_stage.load_stage();
+            temp_stage.added_files[old_file.first]="new_blob_id";
+            temp_stage.save_stage(temp_stage);
+        }//当前分支删除，other没有删除并且做出修改，冲突
+        if(my_iter!=my_files.end()&&my_iter->second!=old_file.second&&other_iter==other_files.end()){
+            std::cout<<"Encountered a merge conflict."<<std::endl;
+            stage temp_stage;
+            temp_stage=temp_stage.load_stage();
+            temp_stage.added_files[old_file.first]=markConflicts(old_file.first,my_iter->second,"deleted!");
+            temp_stage.save_stage(temp_stage);
+        }//当前分支没有删除并且做出修改，other删除，冲突
+    }
+    for(auto other_file:other_files){
+        auto my_iter=my_files.find(other_file.first);
+        auto old_iter=old_files.find(other_file.first);
+        if(my_iter==my_files.end()&&old_iter==old_files.end()){
+            Repository* repo;
+            std::string full_filepath=Utils::join(path_to_file,other_file.first);
+            if(Utils::isFile(full_filepath)){
+                Utils::exitWithMessage("There is an untracked file in the way; delete it, or add and commit it first.");
+            }//对仓库中的文件的保护，防止直接覆盖
+            repo->checkoutFile(other_file.first);
+            delete repo;
+            stage temp_stage;
+            temp_stage=temp_stage.load_stage();
+            temp_stage.added_files[other_file.first]=other_file.second;
+            temp_stage.save_stage(temp_stage);
+        }//仅存在于other分支的文件
+        if(my_iter!=my_files.end()&&old_iter==old_files.end()){
+            if(other_file.second!=my_iter->second){
+                std::cout<<"Encountered a merge conflict."<<std::endl;
+                stage temp_stage;
+                temp_stage=temp_stage.load_stage();
+                temp_stage.added_files[other_file.first]=markConflicts(other_file.first,my_iter->second,other_file.second);
+                temp_stage.save_stage(temp_stage);
+            }
+        }//不在LCA中存在，但当前分支和other分支都存在且文件不同,冲突
+    }
+    std::string path=getPathToBranch();//如果是detachedHEAD可能不需要考虑
+    size_t pos=path.find_last_of("/");
+    current_branchname=path.substr(pos+1);
+    mergeCommit(current_branchname,branchname,commit_id,other_commit_id);
+    //合并完成自动提交
+    return;
+}
 
 
 //辅助功能
@@ -561,3 +738,47 @@ void blob::load_blob(std::string blob_id){
     this->blob_contents=content;
     return;
 }
+void mergeCommit(std::string branchname1,std::string branchname2,std::string commit_id1,std::string commit_id2){
+    Commit last_commit;
+    std::string last_commit_id=getCommitIdFromHEAD();
+    last_commit=Commit::load(last_commit_id);
+    Commit current_commit(last_commit);
+    current_commit.setTime();
+    current_commit.setMessage("Merged "+branchname1+" into "+branchname2);
+    current_commit.setParents(commit_id1,commit_id2);
+    stage current_stage;
+    current_stage=stage::load_stage();
+    if(current_stage.added_files.empty()&&current_stage.removed_files.empty()){
+        Utils::exitWithMessage("No changes added to the commit.");
+    }
+    std::map tracked_files=current_commit.getTrackedFiles();
+    for(auto& [filename,blob_id]:current_stage.added_files){
+        auto iter=tracked_files.find(filename);
+        if(iter!=tracked_files.end()){
+            iter->second=blob_id;
+        }else{
+            tracked_files[filename]=blob_id;
+        }
+    }
+    for(auto&[filename,blob_id]:current_stage.removed_files){
+        auto iter=tracked_files.find(filename);
+        if(iter!=tracked_files.end()){
+            tracked_files.erase(iter);
+        }
+    }
+    current_commit.setTrackedFiles(current_commit,tracked_files);
+    current_stage.clear();
+    current_stage.save_stage(current_stage);
+    std::string current_id=current_commit.genID();
+    current_commit.setID(current_id);
+    current_commit.save();
+    if(isDetachedHEAD()){
+        std::string path=Utils::join(getGitliteDir(),"HEAD");
+        Utils::writeContents(path,current_id);
+    }else{
+        std::string path=getPathToBranch();
+        Utils::writeContents(path,current_id);
+    }
+    return;
+}
+std::string markConflicts(std::string filename,std::string blob_id1,std::string blob_id2){}

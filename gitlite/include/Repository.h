@@ -36,8 +36,8 @@ class Repository{
     public:
     Repository()=default;
     ~Repository()=default;
-    void init();//初始化仓库，创建文件夹
-    void add(std::string filename);//将文件放上stage
+    void init();
+    void add(std::string filename);
     void commit(std::string message);
     void rm(std::string filename);
     void log();
@@ -50,9 +50,12 @@ class Repository{
     void branch(std::string branchname);
     void rmBranch(std::string branchname);
     void reset(std::string commit_id);
+    void merge(std::string branchname);
 };
 std::string getGitliteDir();//返回gitlite的文件路径
 std::string getPathToBranch();//返回到当前branch的路径
-bool isDetachedHEAD();
+bool isDetachedHEAD();//头指针是否在分支最前端
 std::string getCommitIdFromHEAD();//返回HEAD指针里的文件内容
+std::string markConflicts(std::string filename,std::string blob_id1,std::string blob_id2);//在文件中标明冲突,返回新的blobid
+void mergeCommit(std::string branchname1,std::string branchname2,std::string commit_id1,std::string commit_id2);//对merge特化的提交
 #endif // REPOSITORY_H

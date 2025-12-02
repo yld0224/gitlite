@@ -36,6 +36,12 @@ class Commit{
         this->parents.push_back(parent_id);
         return this->parents;
     }
+    std::vector<std::string> setParents(std::string parent_id1,std::string parent_id2){
+        this->parents.clear();
+        this->parents.push_back(parent_id1);
+        this->parents.push_back(parent_id2);
+        return this->parents;
+    }
     std::map<std::string,std::string> getTrackedFiles(){
         return this->tracked_files;
     }

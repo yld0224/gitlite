@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) {
     } else if (firstArg == "merge") {
         checkCWD();
         checkArgsNum(args, 2);
-    // repo.merge(args[1]);
+        repo.merge(args[1]);
     } else if (firstArg == "push") {
         checkCWD();
         checkArgsNum(args, 3);

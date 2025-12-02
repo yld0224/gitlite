@@ -1,1 +1,0 @@
-/usr/bin/c++ CMakeFiles/gitlite.dir/main.cpp.o CMakeFiles/gitlite.dir/src/Utils.cpp.o CMakeFiles/gitlite.dir/src/GitliteException.cpp.o CMakeFiles/gitlite.dir/src/Commit.cpp.o CMakeFiles/gitlite.dir/src/Repository.cpp.o -o gitlite 
