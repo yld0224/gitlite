@@ -592,12 +592,12 @@ void Repository::merge(std::string branchname){
         auto my_iter=my_files.find(other_file.first);
         auto old_iter=old_files.find(other_file.first);
         if(my_iter==my_files.end()&&old_iter==old_files.end()){
-            Repository* repo;
+            Repository* repo=new Repository;
             std::string full_filepath=Utils::join(path_to_file,other_file.first);
             if(Utils::isFile(full_filepath)){
                 Utils::exitWithMessage("There is an untracked file in the way; delete it, or add and commit it first.");
             }//对仓库中的文件的保护，防止直接覆盖
-            repo->checkoutFile(other_file.first);
+            repo->checkoutFileInCommit(other_commit.getID(), other_file.first);//bugfix:checkout函数选错了
             delete repo;
             stage temp_stage;
             temp_stage=temp_stage.load_stage();
