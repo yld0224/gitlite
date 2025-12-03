@@ -6,6 +6,8 @@
 #include <fstream>
 #include <iostream>
 #include <algorithm>
+#include <unordered_map>
+#include <queue>
 void Repository::init(){
     std::string cwd=static_cast<std::string>(std::filesystem::current_path());
     std::string path=Utils::join(cwd,".gitlite");
@@ -474,7 +476,7 @@ void Repository::reset(std::string commit_id){
     //最后移动头指针的位置,并且清空当前stage
     return;
 }
-void merge(std::string branchname){
+void Repository::merge(std::string branchname){
     std::string current_branchname;
     stage current_stage;
     current_stage=current_stage.load_stage();
@@ -504,58 +506,24 @@ void merge(std::string branchname){
         }
     }//处理merge之前异常情况
     std::string commit_id=getCommitIdFromHEAD();
-    std::vector<std::string> my_parents;
     Commit current_commit;
     current_commit=current_commit.load(commit_id);
-    while(1){
-        auto parents=current_commit.getParents();
-        if(parents.empty()){
-            break;
-        }else{
-            my_parents.push_back(parents[0]);
-        }
-        current_commit=current_commit.load(parents[0]);
-    }
-    current_commit=current_commit.load(commit_id);//重新load回来
     heads_path=Utils::join(heads_path,branchname);
     std::string other_commit_id;
     other_commit_id=Utils::readContentsAsString(heads_path);
     Commit other_commit;
     other_commit=other_commit.load(other_commit_id);
-    std::vector<std::string> other_parents;
-    while(1){
-        auto parents=other_commit.getParents();
-        if(parents.empty()){
-            break;
-        }else{
-            other_parents.push_back(parents[0]);
-        }
-        other_commit=other_commit.load(parents[0]);
-    }
-    other_commit=other_commit.load(other_commit_id);
-    for(auto parent:my_parents){
-        if(parent==other_commit_id){
-            Utils::exitWithMessage("Given branch is an ancestor of the current branch.");
-        }
-    }
-    for(auto parent:other_parents){
-        if(parent==commit_id){
-            Repository* repo=new Repository;
-            repo->Repository::checkoutBranch(branchname);
-            delete repo;
-            Utils::exitWithMessage("Current branch fast-forwarded.");
-        }
-    }//两种各自是对方祖先的情况
     std::string LCA;
-    for(auto my_parent:my_parents){
-        for(auto other_parent:other_parents){
-            if(my_parent==other_parent){
-                LCA=my_parent;
-                break;
-            }
-        }
-    }
-    //找到LCA(这里的逻辑需要修改,因为存在递归合并)
+    LCA=getLCA(current_commit,other_commit);
+    //找到LCA
+    if(LCA==branchname){
+        Utils::exitWithMessage("Given branch is an ancestor of the current branch.");
+    }else if(LCA==current_branchname){
+        Repository* repo=new Repository;
+        repo->checkoutBranch(branchname);
+        delete repo;
+        Utils::exitWithMessage("Current branch fast-forwarded.");
+    }//两种各自是对方祖先的情况
     Commit parent_commit;
     parent_commit=parent_commit.load(LCA);
     auto old_files=parent_commit.getTrackedFiles();
@@ -604,10 +572,9 @@ void merge(std::string branchname){
         }//当前分支没有修改但被other分支删除的，听other的
         if(my_iter==my_files.end()&&other_iter!=other_files.end()&&other_iter->second!=old_file.second){
             std::cout<<"Encountered a merge conflict."<<std::endl;
-            markConflicts(old_file.first,"deleted!",other_iter->second);
             stage temp_stage;
             temp_stage=temp_stage.load_stage();
-            temp_stage.added_files[old_file.first]="new_blob_id";
+            temp_stage.added_files[old_file.first]=markConflicts(old_file.first,"deleted!",other_iter->second);
             temp_stage.save_stage(temp_stage);
         }//当前分支删除，other没有删除并且做出修改，冲突
         if(my_iter!=my_files.end()&&my_iter->second!=old_file.second&&other_iter==other_files.end()){
@@ -744,7 +711,7 @@ void mergeCommit(std::string branchname1,std::string branchname2,std::string com
     last_commit=Commit::load(last_commit_id);
     Commit current_commit(last_commit);
     current_commit.setTime();
-    current_commit.setMessage("Merged "+branchname1+" into "+branchname2);
+    current_commit.setMessage("Merged "+branchname2+" into "+branchname1);
     current_commit.setParents(commit_id1,commit_id2);
     stage current_stage;
     current_stage=stage::load_stage();
@@ -781,4 +748,78 @@ void mergeCommit(std::string branchname1,std::string branchname2,std::string com
     }
     return;
 }
-std::string markConflicts(std::string filename,std::string blob_id1,std::string blob_id2){}
+std::string markConflicts(std::string filename,std::string blob_id1,std::string blob_id2){
+    std::string cwd=static_cast<std::string>(std::filesystem::current_path());
+    std::string path_to_file=Utils::join(cwd,filename);
+    std::string path_to_blob=getGitliteDir();
+    path_to_blob=Utils::join(path_to_blob,"objects");
+    std::stringstream ss;
+    if(blob_id1=="deleted!"){
+        path_to_blob=Utils::join(path_to_blob,blob_id2);
+        std::string content=Utils::readContentsAsString(path_to_blob);
+        ss<<"<<<<<<< HEAD"<<"\n";
+        ss<<"======="<<"\n";
+        ss<<content<<"\n";
+        ss<<">>>>>>>";
+        Utils::writeContents(path_to_file,ss.str());
+    }
+    else if(blob_id2=="deleted!"){
+        path_to_blob=Utils::join(path_to_blob,blob_id1);
+        std::string content=Utils::readContentsAsString(path_to_blob);
+        ss<<"<<<<<<< HEAD"<<"\n";
+        ss<<content<<"\n";
+        ss<<"======="<<"\n";
+        ss<<">>>>>>>";
+        Utils::writeContents(path_to_file,ss.str());
+    }else{
+        std::string path_to_blob1=Utils::join(path_to_blob,blob_id1);
+        std::string path_to_blob2=Utils::join(path_to_blob,blob_id2);
+        std::string content1=Utils::readContentsAsString(path_to_blob1);
+        std::string content2=Utils::readContentsAsString(path_to_blob2);
+        ss<<"<<<<<<< HEAD"<<"\n";
+        ss<<content1<<"\n";
+        ss<<"======="<<"\n";
+        ss<<content2<<"\n";
+        ss<<">>>>>>>";
+    }//在工作区直接修改文件(else部分需要修改,需要diff逻辑)
+    std::string new_blob_id=Utils::sha1(ss.str());
+    blob new_blob(new_blob_id,ss.str());
+    new_blob.save_blob(new_blob);//创建文件对应的新blob
+    return new_blob_id;
+}
+std::string getLCA(Commit current_commit,Commit other_commit){
+    std::unordered_map<std::string,int> is_visited1;
+    std::unordered_map<std::string,int> is_visited2;
+    std::queue<std::string> q1;
+    std::queue<std::string> q2;
+    q1.push(current_commit.getID());
+    q2.push(other_commit.getID());
+    is_visited1.insert({current_commit.getID(),1});
+    is_visited2.insert({other_commit.getID(),1});
+    while(1){
+        auto tmp1=q1.front();auto tmp2=q2.front();
+        if(is_visited2.count(tmp1)){
+            return tmp1;
+        }
+        if(is_visited1.count(tmp2)){
+            return tmp2;
+        }
+        current_commit=current_commit.load(tmp1);
+        auto my_parents=current_commit.getParents();
+        if(!my_parents.empty()){
+            for(auto parent:my_parents){
+                q1.push(parent);
+                is_visited1.insert({parent,1});
+            }
+        }
+        other_commit=other_commit.load(tmp2);
+        auto other_parents=other_commit.getParents();
+        if(!other_parents.empty()){
+            for(auto parent:other_parents){
+                q2.push(parent);
+                is_visited2.insert({parent,1});
+            }
+        }
+        q1.pop();q2.pop();
+    }
+}//采用bfs
