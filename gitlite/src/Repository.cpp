@@ -516,9 +516,9 @@ void Repository::merge(std::string branchname){
     std::string LCA;
     LCA=getLCA(current_commit,other_commit);
     //找到LCA
-    if(LCA==branchname){
+    if(LCA==other_commit_id){
         Utils::exitWithMessage("Given branch is an ancestor of the current branch.");
-    }else if(LCA==current_branchname){
+    }else if(LCA==commit_id){//bugfix:LCA=commit_id
         Repository* repo=new Repository;
         repo->checkoutBranch(branchname);
         delete repo;
@@ -530,6 +530,7 @@ void Repository::merge(std::string branchname){
     auto my_files=current_commit.getTrackedFiles();
     auto other_files=other_commit.getTrackedFiles();
     std::string path_to_file=static_cast<std::string>(std::filesystem::current_path());
+    bool has_conflicts=false;
     for(auto old_file:old_files){
        auto my_iter=my_files.find(old_file.first);
        auto other_iter=other_files.find(old_file.first);
@@ -554,6 +555,7 @@ void Repository::merge(std::string branchname){
             if(my_iter->second==other_iter->second){
                 continue;//当前分支和other分支做出相同修改，不改变
             }else{
+                has_conflicts=true;
                 std::cout<<"Encountered a merge conflict."<<std::endl;
                 stage temp_stage;
                 temp_stage=temp_stage.load_stage();
@@ -575,6 +577,12 @@ void Repository::merge(std::string branchname){
         }//当前分支没有修改但被other分支删除的，听other的
         if(my_iter==my_files.end()&&other_iter!=other_files.end()&&other_iter->second!=old_file.second){
             std::cout<<"Encountered a merge conflict."<<std::endl;
+            has_conflicts=true;
+            std::string cwd=static_cast<std::string>(std::filesystem::current_path());
+            std::string full_filepath = Utils::join(cwd, old_file.first);
+            if (Utils::isFile(full_filepath)) {
+                Utils::exitWithMessage("There is an untracked file in the way; delete it, or add and commit it first.");
+            }
             stage temp_stage;
             temp_stage=temp_stage.load_stage();
             temp_stage.added_files[old_file.first]=markConflicts(old_file.first,"deleted!",other_iter->second);
@@ -582,6 +590,7 @@ void Repository::merge(std::string branchname){
         }//当前分支删除，other没有删除并且做出修改，冲突
         if(my_iter!=my_files.end()&&my_iter->second!=old_file.second&&other_iter==other_files.end()){
             std::cout<<"Encountered a merge conflict."<<std::endl;
+            has_conflicts=true;
             stage temp_stage;
             temp_stage=temp_stage.load_stage();
             temp_stage.added_files[old_file.first]=markConflicts(old_file.first,my_iter->second,"deleted!");
@@ -607,6 +616,7 @@ void Repository::merge(std::string branchname){
         if(my_iter!=my_files.end()&&old_iter==old_files.end()){
             if(other_file.second!=my_iter->second){
                 std::cout<<"Encountered a merge conflict."<<std::endl;
+                has_conflicts=true;
                 std::string cwd=static_cast<std::string>(std::filesystem::current_path());
                 cwd=Utils::join(cwd,my_iter->first);
                 if(Utils::isFile(cwd)){
@@ -622,7 +632,7 @@ void Repository::merge(std::string branchname){
     std::string path=getPathToBranch();//如果是detachedHEAD可能不需要考虑
     size_t pos=path.find_last_of("/");
     current_branchname=path.substr(pos+1);
-    mergeCommit(current_branchname,branchname,commit_id,other_commit_id);
+    if(!has_conflicts){mergeCommit(current_branchname,branchname,commit_id,other_commit_id);}
     //合并完成自动提交
     return;
 }
@@ -765,18 +775,20 @@ std::string markConflicts(std::string filename,std::string blob_id1,std::string 
     if(blob_id1=="deleted!"){
         path_to_blob=Utils::join(path_to_blob,blob_id2);
         std::string content=Utils::readContentsAsString(path_to_blob);
-        ss<<"<<<<<<< HEAD"<<"\n";
-        ss<<"======="<<"\n";
-        ss<<content<<"\n";
+        ss<<"<<<<<<< HEAD\n";
+        ss<<"=======\n";
+        ss<<content;
+        if (content.back() != '\n') ss << "\n";
         ss<<">>>>>>>";
-        Utils::writeContents(path_to_file,ss.str());
+        Utils::writeContents(path_to_file,ss.str());//bugfix:endl?
     }
     else if(blob_id2=="deleted!"){
         path_to_blob=Utils::join(path_to_blob,blob_id1);
         std::string content=Utils::readContentsAsString(path_to_blob);
-        ss<<"<<<<<<< HEAD"<<"\n";
-        ss<<content<<"\n";
-        ss<<"======="<<"\n";
+        ss<<"<<<<<<< HEAD\n";
+        ss<<content;
+        if (content.back() != '\n') ss << "\n";
+        ss<<"=======\n";
         ss<<">>>>>>>";
         Utils::writeContents(path_to_file,ss.str());
     }else{
@@ -784,10 +796,12 @@ std::string markConflicts(std::string filename,std::string blob_id1,std::string 
         std::string path_to_blob2=Utils::join(path_to_blob,blob_id2);
         std::string content1=Utils::readContentsAsString(path_to_blob1);
         std::string content2=Utils::readContentsAsString(path_to_blob2);
-        ss<<"<<<<<<< HEAD"<<"\n";
-        ss<<content1<<"\n";
-        ss<<"======="<<"\n";
-        ss<<content2<<"\n";
+        ss<<"<<<<<<< HEAD\n";
+        ss<<content1;
+        if (content1.back() != '\n') ss << "\n";
+        ss<<"=======\n";
+        ss<<content2;
+        if (content2.back() != '\n') ss << "\n";
         ss<<">>>>>>>";
     }//在工作区直接修改文件(else部分需要修改,需要diff逻辑)
     std::string new_blob_id=Utils::sha1(ss.str());
@@ -822,5 +836,5 @@ std::string getLCA(Commit current_commit,Commit other_commit){
             q.push(parent);
         }
     }
-    
+    return "LCA not found";//不可能进行到这
 }//采用bfs

@@ -319,3 +319,168 @@ Actual: === Branches ===
 
 === Untracked Files ===
 
+samples/5-merge-01.in: 
+log: 
+Expected: ['===', 'commit ([a-f0-9]+)[ \\t]*\\n(?:Merge:\\s+[0-9a-f]{7}\\s+[0-9a-f]{7}[ ]*\\n)?Date: \\w\\w\\w \\w\\w\\w \\d+ \\d\\d:\\d\\d:\\d\\d \\d\\d\\d\\d [-+]\\d\\d\\d\\d', 'Merged other into master\\.', '', '(?:(?:.|\\n)*(?:\\n|\\Z)|\\A|\\Z)']
+Actual: ===
+commit 39c4a8141c5e407b7165e7307a9962a4ac5e8682
+Merge: a52d329 0ab1a01
+Date: Wed Dec 03 16:15:48 2025 +0800
+Merged other into master
+
+===
+commit a52d329449814e2bfea45ebf10c5068ec376bc24
+Date: Wed Dec 03 16:15:48 2025 +0800
+Add h.txt and remove g.txt
+
+===
+commit 579d49cc45acab847585f96775a7400f23966df5
+Date: Wed Dec 03 16:15:48 2025 +0800
+Two files
+
+===
+commit 140e3f3af555160ae48e18d874bae3e8195117b2
+Date: Thu Jan 01 00:00:00 1970 +0000
+initial commit
+
+
+samples/5-merge-04.in: 
+status: 
+Expected: ['=== Branches ===', '*master', 'other', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: === Branches ===
+*master
+other
+
+=== Staged Files ===
+
+=== Removed Files ===
+f.txt
+
+=== Modifications Not Staged For Commit ===
+
+=== Untracked Files ===
+
+samples/5-merge-06.in: 
+merge b1: 
+Expected: ['Given branch is an ancestor of the current branch.']
+Actual: No changes added to the commit.
+
+samples/5-merge-07.in: 
+merge master: 
+Expected: ['Encountered a merge conflict.']
+Actual: Encountered a merge conflict.
+There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/5-merge-08.in: 
+merge master: 
+Expected: []
+Actual: Encountered a merge conflict.
+
+samples/6-remote-01.in: 
+checkout R1/master: 
+Expected: []
+Actual: No such branch exists.
+
+samples/6-remote-02.in: 
+reset e8c04c933f9f1ce577fb9aae4c2c38284ed55184: 
+Expected: []
+Actual: No commit with that id exists.
+
+samples/6-remote-03.in: 
+add-remote R1 ../D1/.gitlite: 
+Expected: ['A remote with that name already exists.']
+Actual: 
+samples/6-status-05.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', 'f.txt', '']
+Actual: === Branches ===
+*master
+
+=== Staged Files ===
+
+=== Removed Files ===
+
+=== Modifications Not Staged For Commit ===
+
+=== Untracked Files ===
+
+samples/5-merge-01.in: 
+log: 
+Expected: ['===', 'commit ([a-f0-9]+)[ \\t]*\\n(?:Merge:\\s+[0-9a-f]{7}\\s+[0-9a-f]{7}[ ]*\\n)?Date: \\w\\w\\w \\w\\w\\w \\d+ \\d\\d:\\d\\d:\\d\\d \\d\\d\\d\\d [-+]\\d\\d\\d\\d', 'Merged other into master\\.', '', '(?:(?:.|\\n)*(?:\\n|\\Z)|\\A|\\Z)']
+Actual: ===
+commit 8c8d0b387be9a3389e6ec8b1e0a81efb4af4b1b3
+Merge: 1bd295b e6afb1e
+Date: Wed Dec 03 16:30:46 2025 +0800
+Merged other into master
+
+===
+commit 1bd295b151492f361c886aa67927d97383591f9b
+Date: Wed Dec 03 16:30:46 2025 +0800
+Add h.txt and remove g.txt
+
+===
+commit 60a25394a3c2949836c082c0ec65fe1f65bb6ee2
+Date: Wed Dec 03 16:30:46 2025 +0800
+Two files
+
+===
+commit 140e3f3af555160ae48e18d874bae3e8195117b2
+Date: Thu Jan 01 00:00:00 1970 +0000
+initial commit
+
+
+samples/5-merge-04.in: 
+status: 
+Expected: ['=== Branches ===', '*master', 'other', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
+Actual: === Branches ===
+*master
+other
+
+=== Staged Files ===
+
+=== Removed Files ===
+f.txt
+
+=== Modifications Not Staged For Commit ===
+
+=== Untracked Files ===
+
+samples/5-merge-07.in: 
+merge master: 
+Expected: ['Encountered a merge conflict.']
+Actual: Encountered a merge conflict.
+There is an untracked file in the way; delete it, or add and commit it first.
+
+samples/5-merge-08.in: 
+merge master: 
+Expected: []
+Actual: Encountered a merge conflict.
+
+samples/6-remote-01.in: 
+checkout R1/master: 
+Expected: []
+Actual: No such branch exists.
+
+samples/6-remote-02.in: 
+reset 1b09bdc12bca868a852909c8a7d21f6feb215af0: 
+Expected: []
+Actual: No commit with that id exists.
+
+samples/6-remote-03.in: 
+add-remote R1 ../D1/.gitlite: 
+Expected: ['A remote with that name already exists.']
+Actual: 
+samples/6-status-05.in: 
+status: 
+Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', 'f.txt', '']
+Actual: === Branches ===
+*master
+
+=== Staged Files ===
+
+=== Removed Files ===
+
+=== Modifications Not Staged For Commit ===
+
+=== Untracked Files ===
+
