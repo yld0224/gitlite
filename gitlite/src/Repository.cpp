@@ -485,7 +485,7 @@ void Repository::merge(std::string branchname){
     }
     std::vector<std::string> files_in_heads;
     std::string heads_path=getGitliteDir();
-    heads_path=Utils::join(heads_path,"ref","heads");
+    heads_path=Utils::join(heads_path,"refs","heads");//bugfix:拼写错误ref(s)
     files_in_heads=Utils::plainFilenamesIn(heads_path);
     bool has_found=false;
     for(auto filename:files_in_heads){
@@ -568,6 +568,9 @@ void Repository::merge(std::string branchname){
             if(other_iter==other_files.end()){
                 std::string full_filepath=Utils::join(path_to_file,old_file.first);
                 Utils::restrictedDelete(full_filepath);
+                stage temp_stage=stage::load_stage();
+                temp_stage.removed_files[old_file.first]=old_file.second;
+                temp_stage.save_stage(temp_stage);//bugfix:更新stage
             }
         }//当前分支没有修改但被other分支删除的，听other的
         if(my_iter==my_files.end()&&other_iter!=other_files.end()&&other_iter->second!=old_file.second){
@@ -604,6 +607,11 @@ void Repository::merge(std::string branchname){
         if(my_iter!=my_files.end()&&old_iter==old_files.end()){
             if(other_file.second!=my_iter->second){
                 std::cout<<"Encountered a merge conflict."<<std::endl;
+                std::string cwd=static_cast<std::string>(std::filesystem::current_path());
+                cwd=Utils::join(cwd,my_iter->first);
+                if(Utils::isFile(cwd)){
+                    Utils::exitWithMessage("There is an untracked file in the way; delete it, or add and commit it first.");
+                }//bugfix:防止直接写入
                 stage temp_stage;
                 temp_stage=temp_stage.load_stage();
                 temp_stage.added_files[other_file.first]=markConflicts(other_file.first,my_iter->second,other_file.second);
@@ -788,38 +796,31 @@ std::string markConflicts(std::string filename,std::string blob_id1,std::string 
     return new_blob_id;
 }
 std::string getLCA(Commit current_commit,Commit other_commit){
-    std::unordered_map<std::string,int> is_visited1;
-    std::unordered_map<std::string,int> is_visited2;
-    std::queue<std::string> q1;
-    std::queue<std::string> q2;
-    q1.push(current_commit.getID());
-    q2.push(other_commit.getID());
-    is_visited1.insert({current_commit.getID(),1});
-    is_visited2.insert({other_commit.getID(),1});
-    while(1){
-        auto tmp1=q1.front();auto tmp2=q2.front();
-        if(is_visited2.count(tmp1)){
-            return tmp1;
+    std::unordered_map<std::string,int> is_visited;
+    std::queue<std::string> q;
+    q.push(current_commit.getID());
+    is_visited.insert({current_commit.getID(),1});
+    while(!q.empty()){
+        std::string id=q.front();
+        q.pop();
+        current_commit=current_commit.load(id);
+        auto parents=current_commit.getParents();
+        for(auto parent:parents){
+            q.push(parent);
+            is_visited.insert({parent,1});
         }
-        if(is_visited1.count(tmp2)){
-            return tmp2;
-        }
-        current_commit=current_commit.load(tmp1);
-        auto my_parents=current_commit.getParents();
-        if(!my_parents.empty()){
-            for(auto parent:my_parents){
-                q1.push(parent);
-                is_visited1.insert({parent,1});
-            }
-        }
-        other_commit=other_commit.load(tmp2);
-        auto other_parents=other_commit.getParents();
-        if(!other_parents.empty()){
-            for(auto parent:other_parents){
-                q2.push(parent);
-                is_visited2.insert({parent,1});
-            }
-        }
-        q1.pop();q2.pop();
     }
+    q.push(other_commit.getID());
+    while(!q.empty()){
+        std::string id=q.front();q.pop();
+        if(is_visited.count(id)){
+            return id;
+        }
+        other_commit=other_commit.load(id);
+        auto parents=other_commit.getParents();
+        for(auto parent:parents){
+            q.push(parent);
+        }
+    }
+    
 }//采用bfs
