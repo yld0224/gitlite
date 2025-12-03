@@ -554,7 +554,7 @@ void Repository::merge(std::string branchname){
         if(my_iter!=my_files.end()&&other_iter!=other_files.end()){
             if(my_iter->second==other_iter->second){
                 continue;//当前分支和other分支做出相同修改，不改变
-            }else{
+            }else if(my_iter->second!=old_file.second&&other_iter->second!=old_file.second){//bugfix:冲突判定更严
                 has_conflicts=true;
                 std::cout<<"Encountered a merge conflict."<<std::endl;
                 stage temp_stage;
@@ -612,11 +612,6 @@ void Repository::merge(std::string branchname){
         }//仅存在于other分支的文件
         if(my_iter!=my_files.end()&&old_iter==old_files.end()){
             if(other_file.second!=my_iter->second){
-                std::string cwd=static_cast<std::string>(std::filesystem::current_path());
-                cwd=Utils::join(cwd,my_iter->first);
-                if(Utils::isFile(cwd)){
-                    Utils::exitWithMessage("There is an untracked file in the way; delete it, or add and commit it first.");
-                }//bugfix:防止直接写入
                 std::cout<<"Encountered a merge conflict."<<std::endl;
                 has_conflicts=true;
                 stage temp_stage;
