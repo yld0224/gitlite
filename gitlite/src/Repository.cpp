@@ -800,6 +800,7 @@ std::string markConflicts(std::string filename,std::string blob_id1,std::string 
         ss<<content2;
         if (content2.back() != '\n') ss << "\n";
         ss<<">>>>>>>\n";
+        Utils::writeContents(path_to_file,ss.str());//bugfix:忘记写入了
     }//在工作区直接修改文件
     std::string new_blob_id=Utils::sha1(ss.str());
     blob new_blob(new_blob_id,ss.str());
