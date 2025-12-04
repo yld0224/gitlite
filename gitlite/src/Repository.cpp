@@ -307,9 +307,67 @@ void Repository::status(){
     std::cout<<std::endl;
     //处理stage的文件
     std::cout<<"=== Modifications Not Staged For Commit ==="<<std::endl;
+    Commit current_commit;
+    std::string commit_id=getCommitIdFromHEAD();
+    current_commit=current_commit.load(commit_id);
+    auto files=current_commit.getTrackedFiles();
+    auto staged_files=loading_stage.added_files;
+    auto removed_files=loading_stage.removed_files;
+    for(auto file:files){
+        auto& [filename,blob_id]=file;
+        std::string path=static_cast<std::string>(std::filesystem::current_path());
+        path=Utils::join(path,filename);
+        auto iter=staged_files.find(filename);
+        blob loading_blob;
+        loading_blob.load_blob(blob_id);
+        if(Utils::isFile(path)){
+            std::string current_content=Utils::readContentsAsString(path);
+            std::string original_content=loading_blob.getContent();
+            if(current_content!=original_content&&iter==staged_files.end()){
+                std::cout<<filename<<std::endl;
+            }
+        }//内容不同且没有在stage上
+        else{
+            if(removed_files.find(filename)==removed_files.end()){
+                std::cout<<filename<<std::endl;
+            }//文件已经被删除但removedfiles没有记录
+        }
+    }
+    for(auto file:staged_files){
+        auto& [filename,blob_id]=file;
+        std::string cwd=static_cast<std::string>(std::filesystem::current_path());
+        std::string path=Utils::join(cwd,filename);
+        if(!Utils::isFile(path)){
+            std::cout<<filename<<std::endl;//已经被删除，却在stage上
+        }else{
+            std::string current_content=Utils::readContentsAsString(path);
+            blob loading_blob;
+            loading_blob.load_blob(blob_id);
+            std::string staged_content=loading_blob.getContent();
+            if(current_content!=staged_content){
+                std::cout<<filename<<std::endl;
+            }//stage的文件内容和工作目录下不同
+        }
+    }
     std::cout<<std::endl;
     std::cout<<"=== Untracked Files ==="<<std::endl;
-    //暂时还没到subtask6
+    auto removed_files=loading_stage.removed_files;
+    std::string cwd=static_cast<std::string>(std::filesystem::current_path());
+    for(auto file:removed_files){
+        std::string full_path=Utils::join(cwd,file.first);
+        if(Utils::isFile(full_path)){
+            std::cout<<file.first<<std::endl;
+        }//本已被删除却存在
+    }
+    std::vector<std::string> working_files=Utils::plainFilenamesIn(cwd);
+    for(auto filename:working_files){
+        auto iter1=files.find(filename);
+        auto iter2=staged_files.find(filename);
+        auto iter3=removed_files.find(filename);
+        if(iter1==files.end()&&iter2==staged_files.end()&&iter3==removed_files.end()){
+            std::cout<<filename<<std::endl;
+        }//在工作区却不在commit中也不在stage上
+    }
 }
 void Repository::checkoutBranch(std::string branchname){
     std::string path=getGitliteDir();
