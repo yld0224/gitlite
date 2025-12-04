@@ -51,6 +51,8 @@ class Repository{
     void rmBranch(std::string branchname);
     void reset(std::string commit_id);
     void merge(std::string branchname);
+    void addRemote(std::string remotename,std::string remotepath);
+    void rmRemote(std::string remotename);
 };
 std::string getGitliteDir();//返回gitlite的文件路径
 std::string getPathToBranch();//返回到当前branch的路径

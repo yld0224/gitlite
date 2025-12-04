@@ -38,11 +38,11 @@ int main(int argc, char* argv[]) {
     } else if (firstArg == "add-remote") {
         checkCWD();
         checkArgsNum(args, 3);
-     //repo.addRemote(args[1], args[2]);
+     repo.addRemote(args[1], args[2]);
     } else if (firstArg == "rm-remote") {
         checkCWD();
         checkArgsNum(args, 2);
-     //repo.rmRemote(args[1]);
+     repo.rmRemote(args[1]);
     } else if (firstArg == "add") {
         checkCWD();
         checkArgsNum(args, 2);

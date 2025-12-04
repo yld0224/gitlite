@@ -609,7 +609,7 @@ void Repository::merge(std::string branchname){
             }
         }   
     }//对仓库中的文件的保护，防止直接覆盖
-    //bugfix:对异常状态的判定提前，防止stage存在状态污染
+    //(important)bugfix:对异常状态的判定提前，防止stage存在状态污染
     for(auto old_file:old_files){
        auto my_iter=my_files.find(old_file.first);
        auto other_iter=other_files.find(old_file.first);
@@ -700,6 +700,25 @@ void Repository::merge(std::string branchname){
     current_branchname=path.substr(pos+1);
     mergeCommit(current_branchname,branchname,commit_id,other_commit_id);
     //合并完成自动提交
+    return;
+}
+void addRemote(std::string remotename,std::string remotepath){
+    std::string path=getGitliteDir();
+    path=Utils::join(path,"refs","remotes",remotename);
+    if(Utils::isFile(path)){
+        Utils::exitWithMessage("A remote with that name already exists.");
+    }
+    Utils::writeContents(path,remotepath);//将remote记录在ref的另一文件夹内
+    Utils::createDirectories(remotepath);//创建remote文件夹
+    return;
+}
+void rmRemote(std::string remotename){
+    std::string path=getGitliteDir();
+    path=Utils::join(path,"refs","remotes",remotename);
+    if(!Utils::isFile(path)){
+        Utils::exitWithMessage("A remote with that name does not exist.");
+    }
+    Utils::restrictedDelete(path);
     return;
 }
 
