@@ -1,69 +1,14 @@
-samples/5-merge-07.in: 
-merge master: 
-Expected: ['Encountered a merge conflict.']
-Actual: There is an untracked file in the way; delete it, or add and commit it first.
-
-samples/5-merge-08.in: 
-merge master: 
-Expected: []
-Actual: Encountered a merge conflict.
-
-samples/6-remote-01.in: 
-checkout R1/master: 
-Expected: []
-Actual: No such branch exists.
-
-samples/6-remote-02.in: 
-reset afda872a476943c5e76f14e4f38e9cd76299e66e: 
-Expected: []
-Actual: No commit with that id exists.
-
-samples/6-remote-03.in: 
-add-remote R1 ../D1/.gitlite: 
-Expected: ['A remote with that name already exists.']
-Actual: 
-samples/6-status-05.in: 
+samples/5-merge-04.in: 
 status: 
-Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', 'f.txt', '']
+Expected: ['=== Branches ===', '*master', 'other', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', '']
 Actual: === Branches ===
 *master
+other
 
 === Staged Files ===
 
 === Removed Files ===
-
-=== Modifications Not Staged For Commit ===
-
-=== Untracked Files ===
-
-samples/5-merge-08.in: 
-merge master: 
-Expected: []
-Actual: Encountered a merge conflict.
-
-samples/6-remote-01.in: 
-checkout R1/master: 
-Expected: []
-Actual: No such branch exists.
-
-samples/6-remote-02.in: 
-reset 48ce78f92d039b57c48f0cbbfed1fd4ec5c4fbf1: 
-Expected: []
-Actual: No commit with that id exists.
-
-samples/6-remote-03.in: 
-add-remote R1 ../D1/.gitlite: 
-Expected: ['A remote with that name already exists.']
-Actual: 
-samples/6-status-05.in: 
-status: 
-Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', 'f.txt', '']
-Actual: === Branches ===
-*master
-
-=== Staged Files ===
-
-=== Removed Files ===
+f.txt
 
 === Modifications Not Staged For Commit ===
 
@@ -75,7 +20,7 @@ Expected: []
 Actual: No such branch exists.
 
 samples/6-remote-02.in: 
-reset b22d920f7d29bbce2c1d361504f4f66265a04114: 
+reset f2040b3d08274da882f2c9dfe39ba9a25af3e9c8: 
 Expected: []
 Actual: No commit with that id exists.
 
@@ -83,17 +28,3 @@ samples/6-remote-03.in:
 add-remote R1 ../D1/.gitlite: 
 Expected: ['A remote with that name already exists.']
 Actual: 
-samples/6-status-05.in: 
-status: 
-Expected: ['=== Branches ===', '*master', '', '=== Staged Files ===', '', '=== Removed Files ===', '', '=== Modifications Not Staged For Commit ===', '', '=== Untracked Files ===', 'f.txt', '']
-Actual: === Branches ===
-*master
-
-=== Staged Files ===
-
-=== Removed Files ===
-
-=== Modifications Not Staged For Commit ===
-
-=== Untracked Files ===
-

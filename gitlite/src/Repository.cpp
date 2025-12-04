@@ -324,12 +324,12 @@ void Repository::status(){
             std::string current_content=Utils::readContentsAsString(path);
             std::string original_content=loading_blob.getContent();
             if(current_content!=original_content&&iter==staged_files.end()){
-                std::cout<<filename<<std::endl;
+                std::cout<<filename+" (modified)"<<std::endl;
             }
         }//内容不同且没有在stage上
         else{
             if(removed_files.find(filename)==removed_files.end()){
-                std::cout<<filename<<std::endl;
+                std::cout<<filename+" (deleted)"<<std::endl;
             }//文件已经被删除但removedfiles没有记录
         }
     }
@@ -338,20 +338,19 @@ void Repository::status(){
         std::string cwd=static_cast<std::string>(std::filesystem::current_path());
         std::string path=Utils::join(cwd,filename);
         if(!Utils::isFile(path)){
-            std::cout<<filename<<std::endl;//已经被删除，却在stage上
+            std::cout<<filename+" (deleted)"<<std::endl;//已经被删除，却在stage上
         }else{
             std::string current_content=Utils::readContentsAsString(path);
             blob loading_blob;
             loading_blob.load_blob(blob_id);
             std::string staged_content=loading_blob.getContent();
             if(current_content!=staged_content){
-                std::cout<<filename<<std::endl;
+                std::cout<<filename+" (modified)"<<std::endl;
             }//stage的文件内容和工作目录下不同
         }
     }
     std::cout<<std::endl;
     std::cout<<"=== Untracked Files ==="<<std::endl;
-    auto removed_files=loading_stage.removed_files;
     std::string cwd=static_cast<std::string>(std::filesystem::current_path());
     for(auto file:removed_files){
         std::string full_path=Utils::join(cwd,file.first);
@@ -628,6 +627,10 @@ void Repository::merge(std::string branchname){
             if(other_iter==other_files.end()){
                 std::string full_filepath=Utils::join(path_to_file,old_file.first);
                 Utils::restrictedDelete(full_filepath);
+                stage loading_stage;
+                loading_stage=loading_stage.load_stage();
+                loading_stage.removed_files[my_iter->first]=my_iter->second;
+                loading_stage.save_stage(loading_stage);
             }
         }//当前分支没有修改但被other分支删除的，听other的
         if(my_iter==my_files.end()&&other_iter!=other_files.end()&&other_iter->second!=old_file.second){
