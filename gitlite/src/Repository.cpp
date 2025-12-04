@@ -589,6 +589,28 @@ void Repository::merge(std::string branchname){
     std::string path_to_file=static_cast<std::string>(std::filesystem::current_path());
     bool has_conflicts=false;
     for(auto old_file:old_files){
+        auto my_iter=my_files.find(old_file.first);
+        auto other_iter=other_files.find(old_file.first);
+        if(my_iter==my_files.end()&&other_iter!=other_files.end()&&other_iter->second!=old_file.second){
+            std::string cwd=static_cast<std::string>(std::filesystem::current_path());
+            std::string full_filepath = Utils::join(cwd, old_file.first);
+            if (Utils::isFile(full_filepath)) {
+                Utils::exitWithMessage("There is an untracked file in the way; delete it, or add and commit it first.");
+            }
+        }
+    }
+    for(auto other_file:other_files){
+        auto my_iter=my_files.find(other_file.first);
+        auto old_iter=old_files.find(other_file.first);
+        if(my_iter==my_files.end()&&old_iter==old_files.end()){
+            std::string full_filepath=Utils::join(path_to_file,other_file.first);
+            if(Utils::isFile(full_filepath)){
+                Utils::exitWithMessage("There is an untracked file in the way; delete it, or add and commit it first.");
+            }
+        }   
+    }//对仓库中的文件的保护，防止直接覆盖
+    //bugfix:对异常状态的判定提前，防止stage存在状态污染
+    for(auto old_file:old_files){
        auto my_iter=my_files.find(old_file.first);
        auto other_iter=other_files.find(old_file.first);
        if(my_iter!=my_files.end()&&my_iter->second==old_file.second){
@@ -634,11 +656,6 @@ void Repository::merge(std::string branchname){
             }
         }//当前分支没有修改但被other分支删除的，听other的
         if(my_iter==my_files.end()&&other_iter!=other_files.end()&&other_iter->second!=old_file.second){
-            std::string cwd=static_cast<std::string>(std::filesystem::current_path());
-            std::string full_filepath = Utils::join(cwd, old_file.first);
-            if (Utils::isFile(full_filepath)) {
-                Utils::exitWithMessage("There is an untracked file in the way; delete it, or add and commit it first.");
-            }
             std::cout<<"Encountered a merge conflict."<<std::endl;
             has_conflicts=true;
             stage temp_stage;
@@ -660,10 +677,6 @@ void Repository::merge(std::string branchname){
         auto old_iter=old_files.find(other_file.first);
         if(my_iter==my_files.end()&&old_iter==old_files.end()){
             Repository* repo=new Repository;
-            std::string full_filepath=Utils::join(path_to_file,other_file.first);
-            if(Utils::isFile(full_filepath)){
-                Utils::exitWithMessage("There is an untracked file in the way; delete it, or add and commit it first.");
-            }//对仓库中的文件的保护，防止直接覆盖
             repo->checkoutFileInCommit(other_commit.getID(), other_file.first);//bugfix:checkout函数选错了
             delete repo;
             stage temp_stage;
