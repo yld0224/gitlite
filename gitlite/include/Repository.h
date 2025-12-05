@@ -53,6 +53,9 @@ class Repository{
     void merge(std::string branchname);
     void addRemote(std::string remotename,std::string remotepath);
     void rmRemote(std::string remotename);
+    void push(std::string remotename,std::string branchname);
+    void fetch(std::string remotename,std::string branchname);
+    void pull(std::string remotename,std::string branchname);
 };
 std::string getGitliteDir();//返回gitlite的文件路径
 std::string getPathToBranch();//返回到当前branch的路径
@@ -61,4 +64,5 @@ std::string getCommitIdFromHEAD();//返回HEAD指针里的文件内容
 std::string markConflicts(std::string filename,std::string blob_id1,std::string blob_id2);//在文件中标明冲突,返回新的blobid
 void mergeCommit(std::string branchname1,std::string branchname2,std::string commit_id1,std::string commit_id2);//对merge特化的提交
 std::string getLCA(Commit current_commit,Commit other_commit);
+void remoteCommit(Commit commit);
 #endif // REPOSITORY_H

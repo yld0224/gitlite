@@ -702,7 +702,7 @@ void Repository::merge(std::string branchname){
     //合并完成自动提交
     return;
 }
-void addRemote(std::string remotename,std::string remotepath){
+void Repository::addRemote(std::string remotename,std::string remotepath){
     std::string path=getGitliteDir();
     path=Utils::join(path,"refs","remotes",remotename);
     if(Utils::isFile(path)){
@@ -712,7 +712,7 @@ void addRemote(std::string remotename,std::string remotepath){
     Utils::createDirectories(remotepath);//创建remote文件夹
     return;
 }
-void rmRemote(std::string remotename){
+void Repository::rmRemote(std::string remotename){
     std::string path=getGitliteDir();
     path=Utils::join(path,"refs","remotes",remotename);
     if(!Utils::isFile(path)){
@@ -721,6 +721,57 @@ void rmRemote(std::string remotename){
     Utils::restrictedDelete(path);
     return;
 }
+void Repository::push(std::string remotename,std::string branchname){
+    std::string cwd=static_cast<std::string>(std::filesystem::current_path());
+    std::string path=getGitliteDir();
+    path=Utils::join(path,"refs","remotes",remotename);
+    std::string remote_path=Utils::readContentsAsString(path);
+    if(!Utils::isDirectory(remote_path)){
+        Utils::exitWithMessage("Remote directory not found.");
+    }
+    std::string path_to_remote_head=Utils::join(remote_path,"HEAD");
+    std::string content=Utils::readContentsAsString(path_to_remote_head);
+    size_t pos=content.find(":");
+    std::string commit_id;
+    if(pos==std::string::npos){
+        commit_id=content;
+    }else{
+        std::string path_to_remote_branch=content.substr(pos+1);
+        path_to_remote_branch=Utils::join(remote_path,path_to_remote_branch);
+        commit_id=Utils::readContentsAsString(path_to_remote_branch);
+    }
+    std::string path_to_current_objects=Utils::join(path,"objects");
+    auto files=Utils::plainFilenamesIn(path_to_current_objects);
+    bool has_found=false;
+    for(auto filename:files){
+        if(filename==commit_id){
+            has_found=true;
+            break;
+        }
+    }
+    if(!has_found){Utils::exitWithMessage("Please pull down remote changes before pushing.");}
+    Commit loading_commit;
+    loading_commit=loading_commit.load(getCommitIdFromHEAD());
+    std::string path_to_remote_branch=Utils::join(remote_path,"refs","heads",branchname);
+    if(!Utils::isDirectory(path_to_remote_branch)){
+        remote_path=remote_path.substr(0,remote_path.length()-9);
+        std::filesystem::current_path(remote_path);//切换到远程仓库当中
+        Repository* tmp=new Repository;
+        tmp->branch(branchname);
+        delete tmp;
+        remoteCommit(loading_commit);
+        std::filesystem::current_path(cwd);//重新返回原始工作目录
+    }
+    else{
+        remote_path=remote_path.substr(0,remote_path.length()-9);
+        std::filesystem::current_path(remote_path);
+        remoteCommit(loading_commit);
+        std::filesystem::current_path(cwd);
+    }
+    return;
+}
+void Repository::fetch(std::string remotename,std::string branchname){}
+void Repository::pull(std::string remotename,std::string branchname){}
 
 
 //辅助功能
@@ -932,4 +983,16 @@ std::string getLCA(Commit current_commit, Commit other_commit) {
         }
     }
     return "LCA not found";//不可能执行到这里 
+}
+void remoteCommit(Commit loaded_commit){
+    Commit current_commit(loaded_commit);
+    current_commit.save();
+    if(isDetachedHEAD()){
+        std::string path=Utils::join(getGitliteDir(),"HEAD");
+        Utils::writeContents(path,current_commit.getID());
+    }else{
+        std::string path=getPathToBranch();
+        Utils::writeContents(path,current_commit.getID());
+    }
+    return;
 }

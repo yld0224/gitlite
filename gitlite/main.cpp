@@ -107,15 +107,15 @@ int main(int argc, char* argv[]) {
     } else if (firstArg == "push") {
         checkCWD();
         checkArgsNum(args, 3);
-    // repo.push(args[1], args[2]);
+    repo.push(args[1], args[2]);
     } else if (firstArg == "fetch") {
         checkCWD();
         checkArgsNum(args, 3);
-    // repo.fetch(args[1], args[2]);
+    repo.fetch(args[1], args[2]);
     } else if (firstArg == "pull") {
         checkCWD();
         checkArgsNum(args, 3);
-    // repo.pull(args[1], args[2]);
+    repo.pull(args[1], args[2]);
     } else {
         std::cout << "No command with that name exists." << std::endl;
         return 0;
