@@ -1,5 +1,0 @@
-samples/6-remote-01.in: 
-checkout master: 
-Expected: []
-Actual: No need to checkout the current branch.
-

@@ -372,15 +372,19 @@ void Repository::status(){
 void Repository::checkoutBranch(std::string branchname){
     std::string path=getGitliteDir();
     path=Utils::join(path,"refs","heads");
-   std::string branch_path=Utils::join(path,branchname);
+    std::string branch_path=Utils::join(path,branchname);
     if(!Utils::isFile(branch_path)){
         Utils::exitWithMessage("No such branch exists.");
     }
     path=branch_path;
     if(!isDetachedHEAD()){
         std::string path=getPathToBranch();
-        size_t pos=path.find_last_of("/");
-        if(path.substr(pos+1)==branchname){
+        std::string current_branch;
+        size_t heads_pos=path.find("refs/heads/");
+        if(heads_pos!=std::string::npos){
+            current_branch=path.substr(heads_pos+11);
+        }
+        if(current_branch==branchname){
             Utils::exitWithMessage("No need to checkout the current branch.");
         }
     }
@@ -711,6 +715,7 @@ void Repository::push(std::string remotename,std::string branchname){
     std::string path=getGitliteDir();
     path=Utils::join(path,"refs","remotes",remotename);
     std::string remote_path=Utils::readContentsAsString(path);
+    remote_path=std::filesystem::absolute(remote_path).string();
     if(!Utils::isDirectory(remote_path)){
         Utils::exitWithMessage("Remote directory not found.");
     }
@@ -1014,20 +1019,28 @@ std::string getLCA(Commit current_commit, Commit other_commit) {
 void remoteCommit(Commit loaded_commit,std::string pathToRemote,std::string pathToCurrent){
     Commit current_commit(loaded_commit);
     std::string commit_id=current_commit.getID();
+    std::string remote_objects_path=Utils::join(pathToRemote,".gitlite","objects");
+    std::string local_objects_path=Utils::join(pathToCurrent,".gitlite","objects");
     while(1){
-    auto tracked_files=current_commit.getTrackedFiles();
-    for(auto file:tracked_files){//bugfix:增加了文件复制的逻辑
-        auto&[filename,blob_id]=file;
-        std::filesystem::current_path(pathToCurrent);
-        blob new_blob;
-        new_blob.load_blob(blob_id);
-        std::filesystem::current_path(pathToRemote);
-        new_blob.save_blob(new_blob);
-    }
-    current_commit.save();
-    std::filesystem::current_path(pathToCurrent);
-    if(current_commit.getParents().empty()){break;}
-    current_commit=current_commit.load(current_commit.getParents()[0]);
+        std::string remote_commit_path=Utils::join(remote_objects_path,current_commit.getID());
+        if(Utils::isFile(remote_commit_path)){
+            break;
+        }
+        auto tracked_files=current_commit.getTrackedFiles();
+        for(auto file:tracked_files){
+            auto&[filename,blob_id]=file;
+            std::string local_blob_path=Utils::join(local_objects_path,blob_id);
+            std::string remote_blob_path=Utils::join(remote_objects_path,blob_id);
+            if(!Utils::isFile(remote_blob_path)){
+                std::string content=Utils::readContentsAsString(local_blob_path);
+                Utils::writeContents(remote_blob_path,content);
+            }
+        }
+        std::string local_commit_path=Utils::join(local_objects_path,current_commit. getID());
+        std::string commit_content=Utils::readContentsAsString(local_commit_path);
+        Utils::writeContents(remote_commit_path,commit_content);
+        if(current_commit.getParents().empty()){break;}
+        current_commit=current_commit.load(current_commit.getParents()[0]);
     }
     return;
-}
+}//bugfix:原版采用切换路径，逻辑脆弱。现直接采用绝对路径。
