@@ -1,17 +1,5 @@
 samples/6-remote-01.in: 
-checkout R1/master: 
+checkout master: 
 Expected: []
-Actual: No such branch exists.
-
-samples/6-remote-02.in: 
-pull R1 master: 
-Expected: []
-Actual: A branch with that name does not exist.
-
-samples/6-remote-03.in: 
-rm-remote R1: 
-Expected: []
-Actual: terminate called after throwing an instance of 'std::invalid_argument'
-  what():  not .gitlite working directory
-Aborted (core dumped)
+Actual: No need to checkout the current branch.
 
