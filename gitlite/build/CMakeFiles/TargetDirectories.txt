@@ -1,3 +1,0 @@
-/home/runner/work/gitlite/gitlite/gitlite/build/CMakeFiles/gitlite.dir
-/home/runner/work/gitlite/gitlite/gitlite/build/CMakeFiles/edit_cache.dir
-/home/runner/work/gitlite/gitlite/gitlite/build/CMakeFiles/rebuild_cache.dir
