@@ -174,3 +174,17 @@ samples/6-remote-03.in:
 fetch R1 master: 
 Expected: ['Remote directory not found.']
 Actual: 
+samples/6-remote-01.in: 
+checkout R1/master: 
+Expected: []
+Actual: No such branch exists.
+
+samples/6-remote-02.in: 
+reset c073b5e6edaa8bf021a645eb0568cab14b718ce1: 
+Expected: []
+Actual: No commit with that id exists.
+
+samples/6-remote-03.in: 
+fetch R1 master: 
+Expected: ['Remote directory not found.']
+Actual: 

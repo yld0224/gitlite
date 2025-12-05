@@ -16,6 +16,7 @@ void Repository::init(){
     }
     if(Utils::createDirectories(path)){
         Utils::createDirectories(path+"/refs/heads");
+        Utils::createDirectories(path+"/refs/remotes");
         Utils::createDirectories(path+"/objects");
         Commit initial_commit;
         initial_commit.save();
@@ -751,23 +752,11 @@ void Repository::push(std::string remotename,std::string branchname){
     if(!has_found){Utils::exitWithMessage("Please pull down remote changes before pushing.");}
     Commit loading_commit;
     loading_commit=loading_commit.load(getCommitIdFromHEAD());
+    std::string local_commit_id=loading_commit.getID();
+    std::string rwd=remote_path.substr(0,remote_path.length()-9);
+    remoteCommit(loading_commit,rwd,cwd);
     std::string path_to_remote_branch=Utils::join(remote_path,"refs","heads",branchname);
-    if(!Utils::isFile(path_to_remote_branch)){
-        remote_path=remote_path.substr(0,remote_path.length()-9);
-        std::filesystem::current_path(remote_path);//切换到远程仓库当中
-        Repository* tmp=new Repository;
-        tmp->branch(branchname);
-        tmp->checkoutBranch(branchname);
-        delete tmp;
-        remoteCommit(loading_commit,remote_path,cwd);
-        std::filesystem::current_path(cwd);//重新返回原始工作目录
-    }
-    else{
-        remote_path=remote_path.substr(0,remote_path.length()-9);
-        std::filesystem::current_path(remote_path);
-        remoteCommit(loading_commit,remote_path,cwd);
-        std::filesystem::current_path(cwd);
-    }
+    Utils::writeContents(path_to_remote_branch, local_commit_id);
     return;
 }
 void Repository::fetch(std::string remotename,std::string branchname){}
