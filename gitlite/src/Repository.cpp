@@ -757,6 +757,7 @@ void Repository::push(std::string remotename,std::string branchname){
         std::filesystem::current_path(remote_path);//切换到远程仓库当中
         Repository* tmp=new Repository;
         tmp->branch(branchname);
+        tmp->checkoutBranch(branchname);
         delete tmp;
         remoteCommit(loading_commit,remote_path,cwd);
         std::filesystem::current_path(cwd);//重新返回原始工作目录
@@ -985,8 +986,10 @@ std::string getLCA(Commit current_commit, Commit other_commit) {
 }
 void remoteCommit(Commit loaded_commit,std::string pathToRemote,std::string pathToCurrent){
     Commit current_commit(loaded_commit);
+    std::string commit_id=current_commit.getID();
+    while(!current_commit.getParents().empty()){
     auto tracked_files=current_commit.getTrackedFiles();
-    for(auto file:tracked_files){
+    for(auto file:tracked_files){//bugfix:增加了文件复制的逻辑
         auto&[filename,blob_id]=file;
         std::filesystem::current_path(pathToCurrent);
         blob new_blob;
@@ -994,13 +997,15 @@ void remoteCommit(Commit loaded_commit,std::string pathToRemote,std::string path
         std::filesystem::current_path(pathToRemote);
         new_blob.save_blob(new_blob);
     }
-    current_commit.save();//bugfix:增加了文件复制的逻辑
+    current_commit.save();
+    current_commit=current_commit.load(current_commit.getParents()[0]);
+    }
     if(isDetachedHEAD()){
         std::string path=Utils::join(getGitliteDir(),"HEAD");
-        Utils::writeContents(path,current_commit.getID());
+        Utils::writeContents(path,commit_id);
     }else{
         std::string path=getPathToBranch();
-        Utils::writeContents(path,current_commit.getID());
+        Utils::writeContents(path,commit_id);
     }
     return;
 }
