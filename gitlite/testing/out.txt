@@ -118,3 +118,31 @@ samples/6-remote-03.in:
 add-remote R1 ../D1/.gitlite: 
 Expected: ['A remote with that name already exists.']
 Actual: 
+samples/6-remote-01.in: 
+checkout R1/master: 
+Expected: []
+Actual: No such branch exists.
+
+samples/6-remote-02.in: 
+reset 460b069cc6fbd82e83e114e785faec7e00c1962b: 
+Expected: []
+Actual: No commit with that id exists.
+
+samples/6-remote-03.in: 
+fetch R1 master: 
+Expected: ['Remote directory not found.']
+Actual: 
+samples/6-remote-01.in: 
+checkout R1/master: 
+Expected: []
+Actual: No such branch exists.
+
+samples/6-remote-02.in: 
+reset df205a5d8ce89012f94e094f0a927537e38f7168: 
+Expected: []
+Actual: No commit with that id exists.
+
+samples/6-remote-03.in: 
+fetch R1 master: 
+Expected: ['Remote directory not found.']
+Actual: 

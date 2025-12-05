@@ -709,7 +709,6 @@ void Repository::addRemote(std::string remotename,std::string remotepath){
         Utils::exitWithMessage("A remote with that name already exists.");
     }
     Utils::writeContents(path,remotepath);//将remote记录在ref的另一文件夹内
-    Utils::createDirectories(remotepath);//创建remote文件夹
     return;
 }
 void Repository::rmRemote(std::string remotename){
@@ -740,7 +739,7 @@ void Repository::push(std::string remotename,std::string branchname){
         path_to_remote_branch=Utils::join(remote_path,path_to_remote_branch);
         commit_id=Utils::readContentsAsString(path_to_remote_branch);
     }
-    std::string path_to_current_objects=Utils::join(path,"objects");
+    std::string path_to_current_objects=Utils::join(getGitliteDir(),"objects");
     auto files=Utils::plainFilenamesIn(path_to_current_objects);
     bool has_found=false;
     for(auto filename:files){
@@ -753,19 +752,19 @@ void Repository::push(std::string remotename,std::string branchname){
     Commit loading_commit;
     loading_commit=loading_commit.load(getCommitIdFromHEAD());
     std::string path_to_remote_branch=Utils::join(remote_path,"refs","heads",branchname);
-    if(!Utils::isDirectory(path_to_remote_branch)){
+    if(!Utils::isFile(path_to_remote_branch)){
         remote_path=remote_path.substr(0,remote_path.length()-9);
         std::filesystem::current_path(remote_path);//切换到远程仓库当中
         Repository* tmp=new Repository;
         tmp->branch(branchname);
         delete tmp;
-        remoteCommit(loading_commit);
+        remoteCommit(loading_commit,remote_path,cwd);
         std::filesystem::current_path(cwd);//重新返回原始工作目录
     }
     else{
         remote_path=remote_path.substr(0,remote_path.length()-9);
         std::filesystem::current_path(remote_path);
-        remoteCommit(loading_commit);
+        remoteCommit(loading_commit,remote_path,cwd);
         std::filesystem::current_path(cwd);
     }
     return;
@@ -984,9 +983,18 @@ std::string getLCA(Commit current_commit, Commit other_commit) {
     }
     return "LCA not found";//不可能执行到这里 
 }
-void remoteCommit(Commit loaded_commit){
+void remoteCommit(Commit loaded_commit,std::string pathToRemote,std::string pathToCurrent){
     Commit current_commit(loaded_commit);
-    current_commit.save();
+    auto tracked_files=current_commit.getTrackedFiles();
+    for(auto file:tracked_files){
+        auto&[filename,blob_id]=file;
+        std::filesystem::current_path(pathToCurrent);
+        blob new_blob;
+        new_blob.load_blob(blob_id);
+        std::filesystem::current_path(pathToRemote);
+        new_blob.save_blob(new_blob);
+    }
+    current_commit.save();//bugfix:增加了文件复制的逻辑
     if(isDetachedHEAD()){
         std::string path=Utils::join(getGitliteDir(),"HEAD");
         Utils::writeContents(path,current_commit.getID());
