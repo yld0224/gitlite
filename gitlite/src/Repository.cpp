@@ -786,31 +786,26 @@ void Repository::fetch(std::string remotename,std::string branchname){
     //先处理可能的异常情况
     std::string path_to_current_objects=Utils::join(getGitliteDir(),"objects");
     auto files=Utils::plainFilenamesIn(path_to_remote_objects);
+    std::string path_to_remote=remote_path.substr(0,remote_path.length()-9);
     for(auto filename:files){
-        std::stringstream ss;
-        std::string full_path=Utils::join(path_to_current_objects,filename);
+        std::string full_path=Utils::join(path_to_remote_objects,filename);
         std::string content=Utils::readContentsAsString(full_path);
         if(content.length()<9||content.substr(0,9)!="timestamp"){
             blob new_blob(filename,content);
             new_blob.save_blob(new_blob);
         }else{
             Commit new_commit;
+            std::filesystem::current_path(path_to_remote);
             new_commit=new_commit.load(filename);
+            std::filesystem::current_path(cwd);
             new_commit.save();
         }
-    }//把远程的文件放到本地
-    std::string contentInHEAD=Utils::readContentsAsString(path_to_remote_head);
-    size_t pos=contentInHEAD.find(":");
-    std::string remote_commit_id;
-    if(pos==std::string::npos){
-        remote_commit_id=contentInHEAD;
-    }else{
-        remote_commit_id=Utils::readContentsAsString(Utils::join(remote_path,contentInHEAD.substr(pos+1)));
-    }
+    }//把远程的文件放到本地;
+    std::string path_to_remote_branch_file = Utils::join(remote_path, "refs", "heads", branchname);
+    std::string remote_commit_id = Utils::readContentsAsString(path_to_remote_branch_file);
     std::string path_to_local_branch=Utils::join(getGitliteDir(),"refs","heads");
-    Utils::writeContents(path_to_local_branch+remotename+"/"+branchname,remote_commit_id);
-    std::string path_to_local_HEAD=Utils::join(getGitliteDir(),"HEAD");
-    Utils::writeContents(path_to_local_HEAD,remotename+"/"+branchname);
+    Utils::writeContents(Utils::join(path_to_local_branch, remotename + "/" + branchname), remote_commit_id);
+    std::filesystem::current_path(cwd);
     return;
 }
 void Repository::pull(std::string remotename,std::string branchname){

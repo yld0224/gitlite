@@ -63,6 +63,6 @@ bool isDetachedHEAD();//头指针是否在分支最前端
 std::string getCommitIdFromHEAD();//返回HEAD指针里的文件内容
 std::string markConflicts(std::string filename,std::string blob_id1,std::string blob_id2);//在文件中标明冲突,返回新的blobid
 void mergeCommit(std::string branchname1,std::string branchname2,std::string commit_id1,std::string commit_id2);//对merge特化的提交
-std::string getLCA(Commit current_commit,Commit other_commit);
-void remoteCommit(Commit commit,std::string pathToRemote,std::string pathToCurrent);
+std::string getLCA(Commit current_commit,Commit other_commit);//得到最近祖先
+void remoteCommit(Commit commit,std::string pathToRemote,std::string pathToCurrent);//把本地提交放到远程
 #endif // REPOSITORY_H
