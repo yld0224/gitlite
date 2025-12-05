@@ -372,18 +372,11 @@ void Repository::status(){
 void Repository::checkoutBranch(std::string branchname){
     std::string path=getGitliteDir();
     path=Utils::join(path,"refs","heads");
-    auto branchnames=Utils::plainFilenamesIn(path);
-    bool has_found=false;
-    for(auto name:branchnames){
-        if(name==branchname){
-            has_found=true;
-            break;
-        }
-    }
-    if(!has_found){
+    std::string branch_path=Utils::join(path,branchname);
+    if(!Utils::isFile(branch_path)){
         Utils::exitWithMessage("No such branch exists.");
     }
-    path=Utils::join(path,branchname);
+    path=branch_path;
     if(!isDetachedHEAD()){
         std::string path=getPathToBranch();
         size_t pos=path.find_last_of("/");
@@ -541,18 +534,10 @@ void Repository::merge(std::string branchname){
     if(!(current_stage.added_files.empty())||!(current_stage.removed_files.empty())){
         Utils::exitWithMessage("You have uncommitted changes.");
     }
-    std::vector<std::string> files_in_heads;
     std::string heads_path=getGitliteDir();
-    heads_path=Utils::join(heads_path,"refs","heads");//bugfix:拼写错误ref(s)
-    files_in_heads=Utils::plainFilenamesIn(heads_path);
-    bool has_found=false;
-    for(auto filename:files_in_heads){
-        if(filename==branchname){
-            has_found=true;
-            break;
-        }
-    }
-    if(!has_found){
+    heads_path=Utils::join(heads_path,"refs","heads");
+    std::string branch_path=Utils::join(heads_path,branchname);
+    if(!Utils::isFile(branch_path)){
         Utils::exitWithMessage("A branch with that name does not exist.");
     }
     if(!isDetachedHEAD()){
@@ -718,7 +703,7 @@ void Repository::rmRemote(std::string remotename){
     if(!Utils::isFile(path)){
         Utils::exitWithMessage("A remote with that name does not exist.");
     }
-    Utils::restrictedDelete(path);
+    std::remove(path.c_str());
     return;
 }
 void Repository::push(std::string remotename,std::string branchname){
