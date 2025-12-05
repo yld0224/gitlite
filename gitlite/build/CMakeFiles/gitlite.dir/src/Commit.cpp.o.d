@@ -1,7 +1,7 @@
 CMakeFiles/gitlite.dir/src/Commit.cpp.o: \
- /mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/src/Commit.cpp \
+ /home/runner/work/gitlite/gitlite/gitlite/src/Commit.cpp \
  /usr/include/stdc-predef.h \
- /mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/src/../include/Commit.h \
+ /home/runner/work/gitlite/gitlite/gitlite/src/../include/Commit.h \
  /usr/include/c++/13/memory /usr/include/c++/13/bits/memoryfwd.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \
@@ -160,7 +160,7 @@ CMakeFiles/gitlite.dir/src/Commit.cpp.o: \
  /usr/include/c++/13/bits/stl_vector.h \
  /usr/include/c++/13/bits/stl_bvector.h \
  /usr/include/c++/13/bits/vector.tcc \
- /mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/src/../include/Utils.h \
+ /home/runner/work/gitlite/gitlite/gitlite/src/../include/Utils.h \
  /usr/include/c++/13/fstream /usr/include/c++/13/istream \
  /usr/include/c++/13/ios /usr/include/c++/13/bits/ios_base.h \
  /usr/include/c++/13/bits/locale_classes.h \

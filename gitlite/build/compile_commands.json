@@ -1,32 +1,32 @@
 [
 {
-  "directory": "/mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/build",
-  "command": "/usr/bin/c++  -I/mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/include -std=gnu++17 -o CMakeFiles/gitlite.dir/main.cpp.o -c /mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/main.cpp",
-  "file": "/mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/main.cpp",
+  "directory": "/home/runner/work/gitlite/gitlite/gitlite/build",
+  "command": "/usr/bin/c++  -I/home/runner/work/gitlite/gitlite/gitlite/include -std=gnu++17 -o CMakeFiles/gitlite.dir/main.cpp.o -c /home/runner/work/gitlite/gitlite/gitlite/main.cpp",
+  "file": "/home/runner/work/gitlite/gitlite/gitlite/main.cpp",
   "output": "CMakeFiles/gitlite.dir/main.cpp.o"
 },
 {
-  "directory": "/mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/build",
-  "command": "/usr/bin/c++  -I/mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/include -std=gnu++17 -o CMakeFiles/gitlite.dir/src/Utils.cpp.o -c /mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/src/Utils.cpp",
-  "file": "/mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/src/Utils.cpp",
+  "directory": "/home/runner/work/gitlite/gitlite/gitlite/build",
+  "command": "/usr/bin/c++  -I/home/runner/work/gitlite/gitlite/gitlite/include -std=gnu++17 -o CMakeFiles/gitlite.dir/src/Utils.cpp.o -c /home/runner/work/gitlite/gitlite/gitlite/src/Utils.cpp",
+  "file": "/home/runner/work/gitlite/gitlite/gitlite/src/Utils.cpp",
   "output": "CMakeFiles/gitlite.dir/src/Utils.cpp.o"
 },
 {
-  "directory": "/mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/build",
-  "command": "/usr/bin/c++  -I/mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/include -std=gnu++17 -o CMakeFiles/gitlite.dir/src/GitliteException.cpp.o -c /mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/src/GitliteException.cpp",
-  "file": "/mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/src/GitliteException.cpp",
+  "directory": "/home/runner/work/gitlite/gitlite/gitlite/build",
+  "command": "/usr/bin/c++  -I/home/runner/work/gitlite/gitlite/gitlite/include -std=gnu++17 -o CMakeFiles/gitlite.dir/src/GitliteException.cpp.o -c /home/runner/work/gitlite/gitlite/gitlite/src/GitliteException.cpp",
+  "file": "/home/runner/work/gitlite/gitlite/gitlite/src/GitliteException.cpp",
   "output": "CMakeFiles/gitlite.dir/src/GitliteException.cpp.o"
 },
 {
-  "directory": "/mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/build",
-  "command": "/usr/bin/c++  -I/mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/include -std=gnu++17 -o CMakeFiles/gitlite.dir/src/Commit.cpp.o -c /mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/src/Commit.cpp",
-  "file": "/mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/src/Commit.cpp",
+  "directory": "/home/runner/work/gitlite/gitlite/gitlite/build",
+  "command": "/usr/bin/c++  -I/home/runner/work/gitlite/gitlite/gitlite/include -std=gnu++17 -o CMakeFiles/gitlite.dir/src/Commit.cpp.o -c /home/runner/work/gitlite/gitlite/gitlite/src/Commit.cpp",
+  "file": "/home/runner/work/gitlite/gitlite/gitlite/src/Commit.cpp",
   "output": "CMakeFiles/gitlite.dir/src/Commit.cpp.o"
 },
 {
-  "directory": "/mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/build",
-  "command": "/usr/bin/c++  -I/mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/include -std=gnu++17 -o CMakeFiles/gitlite.dir/src/Repository.cpp.o -c /mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/src/Repository.cpp",
-  "file": "/mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/src/Repository.cpp",
+  "directory": "/home/runner/work/gitlite/gitlite/gitlite/build",
+  "command": "/usr/bin/c++  -I/home/runner/work/gitlite/gitlite/gitlite/include -std=gnu++17 -o CMakeFiles/gitlite.dir/src/Repository.cpp.o -c /home/runner/work/gitlite/gitlite/gitlite/src/Repository.cpp",
+  "file": "/home/runner/work/gitlite/gitlite/gitlite/src/Repository.cpp",
   "output": "CMakeFiles/gitlite.dir/src/Repository.cpp.o"
 }
 ]

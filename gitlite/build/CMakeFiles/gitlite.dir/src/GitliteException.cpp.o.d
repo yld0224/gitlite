@@ -1,7 +1,7 @@
 CMakeFiles/gitlite.dir/src/GitliteException.cpp.o: \
- /mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/src/GitliteException.cpp \
+ /home/runner/work/gitlite/gitlite/gitlite/src/GitliteException.cpp \
  /usr/include/stdc-predef.h \
- /mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/src/../include/GitliteException.h \
+ /home/runner/work/gitlite/gitlite/gitlite/src/../include/GitliteException.h \
  /usr/include/c++/13/exception \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \

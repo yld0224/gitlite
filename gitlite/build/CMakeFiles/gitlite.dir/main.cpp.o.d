@@ -1,5 +1,5 @@
 CMakeFiles/gitlite.dir/main.cpp.o: \
- /mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/main.cpp \
+ /home/runner/work/gitlite/gitlite/gitlite/main.cpp \
  /usr/include/stdc-predef.h /usr/include/c++/13/iostream \
  /usr/include/c++/13/bits/requires_hosted.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
@@ -154,14 +154,14 @@ CMakeFiles/gitlite.dir/main.cpp.o: \
  /usr/include/c++/13/bits/stl_vector.h \
  /usr/include/c++/13/bits/stl_bvector.h \
  /usr/include/c++/13/bits/vector.tcc \
- /mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/include/Repository.h \
+ /home/runner/work/gitlite/gitlite/gitlite/include/Repository.h \
  /usr/include/c++/13/map /usr/include/c++/13/bits/stl_tree.h \
  /usr/include/c++/13/ext/aligned_buffer.h \
  /usr/include/c++/13/bits/node_handle.h \
  /usr/include/c++/13/bits/stl_map.h \
  /usr/include/c++/13/bits/stl_multimap.h \
  /usr/include/c++/13/bits/erase_if.h \
- /mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/include/Commit.h \
+ /home/runner/work/gitlite/gitlite/gitlite/include/Commit.h \
  /usr/include/c++/13/memory /usr/include/c++/13/bits/stl_tempbuf.h \
  /usr/include/c++/13/bits/stl_raw_storage_iter.h \
  /usr/include/c++/13/bits/align.h \
@@ -179,7 +179,7 @@ CMakeFiles/gitlite.dir/main.cpp.o: \
  /usr/include/c++/13/backward/auto_ptr.h \
  /usr/include/c++/13/pstl/glue_memory_defs.h \
  /usr/include/c++/13/pstl/execution_defs.h /usr/include/c++/13/ctime \
- /mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/include/Utils.h \
+ /home/runner/work/gitlite/gitlite/gitlite/include/Utils.h \
  /usr/include/c++/13/fstream /usr/include/c++/13/bits/codecvt.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/basic_file.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++io.h \

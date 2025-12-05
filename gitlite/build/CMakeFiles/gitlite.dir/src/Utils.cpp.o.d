@@ -1,7 +1,7 @@
 CMakeFiles/gitlite.dir/src/Utils.cpp.o: \
- /mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/src/Utils.cpp \
+ /home/runner/work/gitlite/gitlite/gitlite/src/Utils.cpp \
  /usr/include/stdc-predef.h \
- /mnt/windows_share/Codefield/CODE_C/gitlite/gitlite/src/../include/Utils.h \
+ /home/runner/work/gitlite/gitlite/gitlite/src/../include/Utils.h \
  /usr/include/c++/13/string /usr/include/c++/13/bits/requires_hosted.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/c++config.h \
  /usr/include/x86_64-linux-gnu/c++/13/bits/os_defines.h \

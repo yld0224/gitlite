@@ -1,1 +1,1 @@
-/usr/bin/c++ CMakeFiles/gitlite.dir/main.cpp.o CMakeFiles/gitlite.dir/src/Utils.cpp.o CMakeFiles/gitlite.dir/src/GitliteException.cpp.o CMakeFiles/gitlite.dir/src/Commit.cpp.o CMakeFiles/gitlite.dir/src/Repository.cpp.o -o gitlite 
+/usr/bin/c++ -Wl,--dependency-file=CMakeFiles/gitlite.dir/link.d CMakeFiles/gitlite.dir/main.cpp.o CMakeFiles/gitlite.dir/src/Utils.cpp.o CMakeFiles/gitlite.dir/src/GitliteException.cpp.o CMakeFiles/gitlite.dir/src/Commit.cpp.o CMakeFiles/gitlite.dir/src/Repository.cpp.o -o gitlite

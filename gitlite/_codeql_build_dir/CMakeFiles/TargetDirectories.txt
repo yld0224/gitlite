@@ -1,0 +1,3 @@
+/home/runner/work/gitlite/gitlite/gitlite/_codeql_build_dir/CMakeFiles/gitlite.dir
+/home/runner/work/gitlite/gitlite/gitlite/_codeql_build_dir/CMakeFiles/edit_cache.dir
+/home/runner/work/gitlite/gitlite/gitlite/_codeql_build_dir/CMakeFiles/rebuild_cache.dir
