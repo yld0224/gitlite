@@ -1,3 +1,4 @@
-This is the most valuable and exciting programing experience i have in these months.
-I'm proud to say that all the functions in repository.cpp and commit.cpp were designed and implemented by myself.
-AI only invloved in some tedious debuggings.
+设计思路：将Commit，Blob，Stage都作为对象类，而repository类仅仅包含gitlite中需要实现的函数方法。
+类的定义：Commit类中包含timestamp，parentid，commitid，files等内容，Blob类包含blobid和content，Stage类包含trackedfiles和removedfiles。
+类的工作原理：对于Commit，Blob，Stage类，一个Commit类会关联多个Blob对象，Blob对象用来存储文件的具体内容，Stage对象则单独存储在stage文件下。我给这些类都分别写了save和load函数，通过新建对象和saveload来改变状态。
+类的持久化实现：.gitlite文件夹下包含objects，refs，HEAD。其中objects下包含stage，commits和blob的内容，refs下分为heads和remotes，HEAD里面是头指针的内容。通过filesystem库的一些函数将类的内容保存在文件下的文件中。对于序列化和反序列化，我在储存文件的时候在信息前加上了标签，在用sstream读取的时候通过识别标签，正确储存在load的类的变量中。
